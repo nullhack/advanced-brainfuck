@@ -26,8 +26,6 @@ This version **DOESN'T** skip [ if the current value is 0. This way we don't nee
 
 ## Project Setup
 
-To download this template:
-
 * **Clone** the project
 * Move into the **project dir**
 * *(Optional)* Run the **tests**
