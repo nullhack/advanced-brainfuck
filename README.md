@@ -64,10 +64,10 @@ To download this template:
 
 ## Project Structure
 
-simple-brainfuck
-├── brainfuck.py
-├── LICENSE
-└── README.md
+    simple-brainfuck
+    ├── brainfuck.py
+    ├── LICENSE
+    └── README.md
 
 ----
 
