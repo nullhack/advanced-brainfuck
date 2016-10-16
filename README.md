@@ -1,4 +1,4 @@
-# python-project-builder
+# simple-brainfuck
 
 Based on Nas Banov's [implementation](http://stackoverflow.com/questions/2588163/implementing-brainfuck-loops-in-an-interpreter#2588195)
 
