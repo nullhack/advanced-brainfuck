@@ -13,7 +13,6 @@ This version **DOESN'T** skip [ if the current value is 0. This way we don't nee
 - [Project Setup](#project-setup)
 - [Usage](#usage)
   - [Positional Arguments](#positional-arguments)
-  - [Optional Arguments](#optional-arguments)
 - [Project Structure](#project-structure)
 - [License](#license)
 
@@ -66,7 +65,7 @@ To download this template:
 
     simple-brainfuck
     ├── brainfuck.py
-    ├── LICENSE
+    ├── examples.txt
     └── README.md
 
 ----
