@@ -1,5 +1,11 @@
 Sum two values (3+2) and put the result (5) in the first cell
 
->>> +++>++<
->>> >[-<+>]<
->>> .
++++>++<
+>[-<+>]<
+.
+
+Sequence of initialization:
+- if there's an input code, run it
+- after running the input the interpreter enter in 
+  shell mode keeping values.
+- an empty value finish the interpreter.
