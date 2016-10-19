@@ -52,7 +52,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 ## Usage: 
 
-    brainfuck.py [-h] [cmd]
+    brainfuck.py [-h] [-s] [cmd]
 
 ### Positional arguments:
 
