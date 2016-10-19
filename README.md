@@ -79,7 +79,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 ### Additional Commands
 
-    {LIB}         import external brainfuck code to current process.
+    {LIB}         import external brainfuck code and run it into current instance.
     *             output all the cells.
     &             output command history.
     help          show this help message.
