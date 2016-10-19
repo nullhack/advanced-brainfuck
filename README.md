@@ -1,9 +1,11 @@
-# simple-brainfuck
+# advanced-brainfuck
 
-This code implement a simple version of [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, using classes and some hackish thing 
+This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are availables, e.g. Import external libs.
+
+This project is one of the most complete Brainfuck interpreters on github today.
 
 
-COMING SOON: import external code!
+
 
 ----
 
@@ -11,7 +13,8 @@ COMING SOON: import external code!
 - [Requirements](#requirements)
 - [Project Setup](#project-setup)
 - [Usage](#usage)
-  - [Positional Arguments](#positional-arguments)
+  - [Positional arguments](#positional-arguments)
+  - [Optionalonal arguments](#optional-arguments)
 - [Project Structure](#project-structure)
 - [License](#license)
 
@@ -28,68 +31,72 @@ COMING SOON: import external code!
 * **Clone** the project
 * Move into the **project dir**
 * *(Optional)* Run the **tests**
-* **Run** a brainfuck code
+* **Run** brainfuck commands
 
 **Step 1**: Clone the project:
 
-    git clone https://github.com/nullhack/simple-brainfuck.git
+    git clone https://github.com/nullhack/advanced-brainfuck.git
 
 **Step 2**: Move into the project dir:
 
-    cd simple-brainfuck
+    cd advanced-brainfuck
 
 **Step 3**: *(Optional)* Run the tests:
 
     python3 -m doctest -v ./examples.txt
     
-**Step 4**: Run a brainfuck code:
+**Step 4**: Run brainfuck COMMANDS:
 
-    python3 brainfuck.py bfcode
+    python3 brainfuck.py COMMANDS
 
 ----
 
 ## Usage: 
 
-    brainfuck.py bfcode
+    brainfuck.py [-h] [cmd]
 
 ### Positional arguments:
 
-    bfcode             brainfuck code that will be parsed
+    cmd         BrainFuck commands
+
+### Optional arguments:
+
+    -h, --help  show this help message and exit
 
 ----
 
 ## Project Structure
 
-    simple-brainfuck
+    advanced-brainfuck
     ├── brainfuck.py
     ├── examples.txt
+    ├── libs
+    │   ├── minus_ten.bf
+    │   ├── plus_ten.bf
+    │   ├── sub.bf
+    │   └── sum.bf
     └── README.md
+
 
 ----
 
 ## License
 
-MIT License
+    Advanced Brainfuck Copyright (C) 2016  Eric Lopes
 
-Copyright (c) 2016 Eric Lopes
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
 ----
 

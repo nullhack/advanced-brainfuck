@@ -1,3 +1,7 @@
+import re
+import sys
+import argparse
+
 class BrainFuck:
 
     def __init__(self):
@@ -47,18 +51,32 @@ class BrainFuck:
     def print_cmd_history(self):
         print(self._cmd_pointer, self.cmd_history)
 
-    def lib(self):
-       print("I'm comming")
-
     @staticmethod
     def is_balanced(cmd_line):
-        s = 0
-        b = {'[':1,']':-1}
+        brackets = {'[':']','{':'}'}
+        stack = []
         for cmd in cmd_line:
-            s += b.get(cmd, 0)
-            if s<0: break
-        return True if s==0 else False
-        
+            d = brackets.get(cmd, None)
+            if d: stack.append(d)
+            elif cmd in brackets.values():
+                if not stack or cmd != stack.pop():
+                    return False
+        return not stack
+
+    @staticmethod
+    def import_lib(cmd_line):        
+        import_list = re.findall('{([a-zA-Z0-9_\-\/]+)\}', cmd_line)
+        import_dict = {}
+        for lib in import_list:
+            try:
+                with open('{}.bf'.format(lib)) as flib:
+                    import_dict[str(lib)] = flib.read()
+                print('importing:', lib)
+            except:
+                import_dict[str(lib)] = ''
+                print('Could not import: ', lib)
+        return import_dict
+
     def execute(self, cmd_line):
         if not self.is_balanced(cmd_line):
             raise Exception("brackets not balanced!")
@@ -76,10 +94,15 @@ class BrainFuck:
             #Additional commands
             '*':self.print_cells,
             '&':self.print_cmd_history,
-            '$':self.lib,
             }
         pos = len(self.cmd_history)
         stack = []
+        try:
+            import_dict = self.import_lib(cmd_line)
+            cmd_line = cmd_line.format(**import_dict)
+        except:
+            print("Lib must be an string without dots, numbers or extensions")
+            cmd_line = ''
         cmd_line = [c for c in cmd_line if c in cmds]
         for cmd in cmd_line:
             self.cmd_history += cmd
@@ -122,9 +145,23 @@ class Cells(dict):
         print_list[pos-m] = '|{}|'.format(print_list[pos-m])
         return ' '.join(map(str, print_list))
 
-if __name__=="__main__":
+def main():
+    #Configure argparser
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument(
+        'cmd',
+        nargs='?',
+        default='',
+        type=str,
+        help='BrainFuck commands',
+    )
+    arguments = arg_parser.parse_args(sys.argv[1:])
+
+    #Execute input and run the interpreter
     bf = BrainFuck()
-    #bf.execute("++--[++]+[>+<-]+[+>>.>]-*&")
-    bf.execute("")
+    bf.execute(arguments.cmd)
     bf.interpreter()
 
+
+if __name__=="__main__":
+    main()
