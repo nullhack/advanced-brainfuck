@@ -12,6 +12,8 @@ This project is one of the most complete Brainfuck interpreters on github today.
 - [Usage](#usage)
   - [Positional arguments](#positional-arguments)
   - [Optionalonal arguments](#optional-arguments)
+- [BrainFuck Commands](#brainfuck-commands)
+  - [Additional Commands](#additional-commands)
 - [Project Structure](#project-structure)
 - [License](#license)
 
@@ -62,6 +64,24 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 ----
 
+## BrainFuck Commands
+
+    >         increment the data pointer (to point to the next cell to the right).
+    <         decrement the data pointer (to point to the next cell to the left).
+    +         increment (increase by one) the value at the data pointer.
+    -         decrement (decrease by one) the value at the data pointer.
+    .         output the value at the data pointer.
+    ,         accept one integer of input, storing its value in the cell at the data pointer.
+    [         if the value at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
+    ]         if the value at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.
+
+### Additional Commands
+
+    {LIB}         import external brainfuck code to current process.
+    *             output all the cells.
+    &             output command history.
+
+----
 ## Project Structure
 
     advanced-brainfuck
