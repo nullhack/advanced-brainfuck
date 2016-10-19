@@ -70,10 +70,13 @@ class BrainFuck:
         for lib in import_list:
             try:
                 with open('{}.bf'.format(lib)) as flib:
-                    import_dict[str(lib)] = flib.read()
+                    bf = BrainFuck()
+                    istr = ''.join(flib.readlines())
+                    bf.execute(istr)
+                    import_dict[lib] = bf.cmd_history
                 print('importing:', lib)
             except:
-                import_dict[str(lib)] = ''
+                import_dict[lib] = ''
                 print('Could not import: ', lib)
         return import_dict
 
@@ -103,6 +106,7 @@ class BrainFuck:
         except:
             print("Lib must be an string without dots, numbers or extensions")
             cmd_line = ''
+        #clean the input, keeping only valid commands
         cmd_line = [c for c in cmd_line if c in cmds]
         for cmd in cmd_line:
             self.cmd_history += cmd
@@ -122,8 +126,11 @@ class BrainFuck:
             while not self.is_balanced(cmd_line):
                 tmp = input('.. ')
                 cmd_line = cmd_line+tmp if tmp else 'skip'
-            if not cmd_line: break
-            self.execute(cmd_line)
+            if cmd_line=='help':
+                print(help_text)
+            elif not cmd_line: break
+            else:
+                self.execute(cmd_line)
 
 class Cells(dict):
     def __init__(self, **kwargs):
@@ -145,6 +152,26 @@ class Cells(dict):
         print_list[pos-m] = '|{}|'.format(print_list[pos-m])
         return ' '.join(map(str, print_list))
 
+help_text = """
+BrainFuck Commands
+
+    >         increment the data pointer.
+    <         decrement the data pointer.
+    +         increment the value at the data pointer.
+    -         decrement the value at the data pointer.
+    .         output the value at the data pointer.
+    ,         accept one integer of inputer.
+    [         jump if value is false.
+    ]         continue if value is true.
+
+Additional Commands
+
+    {LIB}         import external brainfuck code to current process.
+    *             output all the cells.
+    &             output command history.
+    help          show this help message."""
+
+
 def main():
     #Configure argparser
     arg_parser = argparse.ArgumentParser()
@@ -155,13 +182,20 @@ def main():
         type=str,
         help='BrainFuck commands',
     )
+
+    arg_parser.add_argument(
+        '-s', '--shell',
+        action='store_true',
+        help='Initialize as shell, and accept new commands',
+    )
+
     arguments = arg_parser.parse_args(sys.argv[1:])
 
     #Execute input and run the interpreter
     bf = BrainFuck()
     bf.execute(arguments.cmd)
-    bf.interpreter()
-
+    if arguments.shell:
+        bf.interpreter()
 
 if __name__=="__main__":
     main()

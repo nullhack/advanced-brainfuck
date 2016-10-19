@@ -1,11 +1,18 @@
-Sum two values (3+2) and put the result (5) in the first cell
-
-+++>++<
->[-<+>]<
-.
-
-Sequence of initialization:
+The sequence of initialization is as follows:
 - if there's an input code, run it
 - after running the input the interpreter enter in 
   shell mode keeping values.
 - an empty value finish the interpreter.
+
+Command line execution is simple:
+
+>>> from brainfuck import BrainFuck
+>>> bf = BrainFuck()
+>>> bf.execute('+++.')
+3
+>>> bf.execute('[-]')
+>>> bf.execute('{libs/plus_ten}*')
+importing: libs/plus_ten
+|10|
+>>> bf.execute('&')
+18 +++.[-]++++++++++*&
