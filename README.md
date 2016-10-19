@@ -1,11 +1,8 @@
 # advanced-brainfuck
 
-This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are availables, e.g. Import external libs.
+This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are available, e.g. Import external libs, Cells print, Command history
 
 This project is one of the most complete Brainfuck interpreters on github today.
-
-
-
 
 ----
 
@@ -82,6 +79,8 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 ## License
 
+This project is released under GPLv3 license.
+
     Advanced Brainfuck Copyright (C) 2016  Eric Lopes
 
     This program is free software: you can redistribute it and/or modify
@@ -97,6 +96,6 @@ This project is one of the most complete Brainfuck interpreters on github today.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+For more info, please read the complete [license](LICENSE) file.
 ----
 
