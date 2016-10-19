@@ -97,5 +97,6 @@ This project is released under GPLv3 license.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 For more info, please read the complete [license](LICENSE) file.
+
 ----
 
