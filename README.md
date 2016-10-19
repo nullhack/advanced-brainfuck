@@ -104,7 +104,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 This project is released under GPLv3 license.
 
-    Advanced Brainfuck Copyright (C) 2016  Eric Lopes
+Advanced Brainfuck Copyright (C) 2016  Eric Lopes
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
