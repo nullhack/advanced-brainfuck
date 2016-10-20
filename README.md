@@ -49,6 +49,10 @@ This project is one of the most complete Brainfuck interpreters on github today.
 **Step 4**: Run brainfuck COMMANDS:
 
     python3 brainfuck.py COMMANDS
+    
+or start the interpreter
+
+    python3 brainfuck.py -s
 
 [↑](#quick-links)
 
