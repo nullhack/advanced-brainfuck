@@ -1,13 +1,27 @@
-The sequence of initialization is as follows:
+The sequence of initialization is as follow:
 - if there's an input code, run it
 - after running the input the interpreter enter in 
   shell mode keeping values.
 - an empty value finish the interpreter.
 
-Command line execution is simple:
+from command line, simple execution should be something like:
 
+python3 brainfuck.py '+++.>+>[-]*&'
+
+or executing shell after running commands:
+
+python3 brainfuck.py '+++.>+>[-]*&' -s
+
+
+Execution from Python programs is simple:
+
+Import BrainFuck class from brainfuck module
 >>> from brainfuck import BrainFuck
+
+Create a new instance of BrainFuck object
 >>> bf = BrainFuck()
+
+Execute commands
 >>> bf.execute('+++.')
 3
 >>> bf.execute('[-]')
@@ -16,3 +30,7 @@ importing: bflib/plus_ten
 |10|
 >>> bf.execute('&')
 19 +++.[-]++++++++++*&
+
+If you want to initialize the interpreter from Python code:
+>> bf.interpreter()
+
