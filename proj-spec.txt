@@ -15,4 +15,4 @@ Command line execution is simple:
 importing: bflib/plus_ten
 |10|
 >>> bf.execute('&')
-18 +++.[-]++++++++++*&
+19 +++.[-]++++++++++*&
