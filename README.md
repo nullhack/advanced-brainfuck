@@ -99,9 +99,13 @@ or start the interpreter
 
 ## Project Structure
 
-    advanced-brainfuck
+    advanced-brainfuck/
     ├── bflib
+    │   ├── copy.bf
+    │   ├── minus_hundred.bf
     │   ├── minus_ten.bf
+    │   ├── mul2.bf
+    │   ├── plus_hundred.bf
     │   ├── plus_ten.bf
     │   ├── sub.bf
     │   └── sum.bf
@@ -109,6 +113,7 @@ or start the interpreter
     ├── LICENSE
     ├── proj-spec.txt
     └── README.md
+
 
 [↑](#quick-links)
 
