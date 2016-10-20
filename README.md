@@ -23,6 +23,8 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 * [python](https://www.python.org/download/releases/3.0/) >= 3.2
 
+[↑](#quick-links)
+
 ----
 
 ## Project Setup
@@ -48,6 +50,8 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
     python3 brainfuck.py COMMANDS
 
+[↑](#quick-links)
+
 ----
 
 ## Usage: 
@@ -63,6 +67,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
     -h, --help   show this help message and exit
     -s, --shell  Initialize as shell, and accept new commands
 
+[↑](#quick-links)
 
 ----
 
@@ -84,20 +89,24 @@ This project is one of the most complete Brainfuck interpreters on github today.
     &             output command history.
     help          show this help message.
 
+[↑](#quick-links)
+
 ----
 
 ## Project Structure
 
     advanced-brainfuck
-    ├── brainfuck.py
-    ├── LICENSE
-    ├── proj-spec.txt
     ├── bflib
     │   ├── minus_ten.bf
     │   ├── plus_ten.bf
     │   ├── sub.bf
     │   └── sum.bf
+    ├── brainfuck.py
+    ├── LICENSE
+    ├── proj-spec.txt
     └── README.md
+
+[↑](#quick-links)
 
 ----
 
@@ -122,6 +131,6 @@ Advanced Brainfuck Copyright (C) 2016  Eric Lopes
 
 For more info, please read the complete [license](LICENSE) file.
 
-----
-
 [↑](#quick-links)
+
+----
