@@ -13,7 +13,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
   - [Positional arguments](#positional-arguments)
   - [Optionalonal arguments](#optional-arguments)
 - [BrainFuck Commands](#brainfuck-commands)
-  - [Additional Commands](#additional-commands)
+  - [Additional commands](#additional-commands)
 - [Project Structure](#project-structure)
 - [License](#license)
 
@@ -77,7 +77,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
     [         jump if value is false.
     ]         continue if value is true.
 
-### Additional Commands
+### Additional commands
 
     {LIB}         import external brainfuck code and run it into current instance.
     *             output all the cells.
@@ -124,3 +124,4 @@ For more info, please read the complete [license](LICENSE) file.
 
 ----
 
+[↑](#quick-links)
