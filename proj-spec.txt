@@ -11,8 +11,8 @@ Command line execution is simple:
 >>> bf.execute('+++.')
 3
 >>> bf.execute('[-]')
->>> bf.execute('{libs/plus_ten}*')
-importing: libs/plus_ten
+>>> bf.execute('{bflib/plus_ten}*')
+importing: bflib/plus_ten
 |10|
 >>> bf.execute('&')
 18 +++.[-]++++++++++*&

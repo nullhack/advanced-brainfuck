@@ -17,8 +17,9 @@ class BrainFuck:
     def _read_value(self):
         while True:
             try:
-                ui = int(input('<< '))
-                self.cells[self.pointer] = ui
+                ui = input('<< ')
+                if not ui: break
+                self.cells[self.pointer] = int(ui)
             except:
                 print("Invalid integer!")
                 continue
@@ -49,7 +50,7 @@ class BrainFuck:
         print(self.cells.print_pos(self.pointer))
 
     def print_cmd_history(self):
-        print(self._cmd_pointer, self.cmd_history)
+        print(len(self.cmd_history), self.cmd_history)
 
     @staticmethod
     def is_balanced(cmd_line):
@@ -170,7 +171,6 @@ Additional Commands
     *             output all the cells.
     &             output command history.
     help          show this help message."""
-
 
 def main():
     #Configure argparser
