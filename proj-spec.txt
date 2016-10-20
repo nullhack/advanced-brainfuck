@@ -4,7 +4,7 @@ The sequence of initialization is as follow:
   shell mode keeping values.
 - an empty value finish the interpreter.
 
-from command line, simple execution should be something like:
+from command line:
 
 python3 brainfuck.py '+++.>+>[-]*&'
 
@@ -31,6 +31,5 @@ importing: bflib/plus_ten
 >>> bf.execute('&')
 19 +++.[-]++++++++++*&
 
-If you want to initialize the interpreter from Python code:
+To initialize the interpreter from Python code:
 >> bf.interpreter()
-
