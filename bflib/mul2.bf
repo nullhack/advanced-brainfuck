@@ -1,6 +1,6 @@
 |A| X X
 
-C = 2A
-X = garbage (0 at the begin and end of program)
+A = 2A
+X = garbage (should be 0 at the begin and will be 0 at the end of program)
 
 [->++[>+<-]<]>>[-<<+>>]<<
