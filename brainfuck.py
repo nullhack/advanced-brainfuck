@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import argparse
+import itertools
 
 class BrainFuck:
 
@@ -13,13 +14,10 @@ class BrainFuck:
         self._jump = {}
 
     def _print_value(self):
-        if not self.cells[self.pointer]:
-            print()
-        else:
-            try:
-                print(chr(self.cells[self.pointer]), end="")
-            except:
-                print(self.cells[self.pointer], end="")
+        value = self.cells[self.pointer]
+        if not value: print()
+        elif value>0 and value<256: print(chr(value), end="")
+        else: print(value, end="")
 
     def _read_value(self):
         while True:
@@ -29,7 +27,6 @@ class BrainFuck:
                 break
             except:
                 pass
-
             try:
                 self.cells[self.pointer] = ord(ui)
                 break
@@ -75,29 +72,33 @@ class BrainFuck:
         return not stack
 
     @staticmethod
-    def import_lib(cmd_line):        
-        import_list = re.findall('{([a-zA-Z0-9_\-\/]+)\}', cmd_line)
+    def import_lib(cmds):
+        BASE_LIB = 'bflib'
+        BASE_DIR = os.path.join(os.path.dirname(__file__))
+        EXT = ['.bf', '']
         import_dict = {}
+        import_list = re.findall('\{([a-zA-Z0-9_\.\-\/]+)\}', cmds)
+        path_ext = list(itertools.product([BASE_LIB, BASE_DIR], EXT))
         for lib in import_list:
-            lib_path = os.path.join(
-                os.path.dirname(__file__),
-                'bflib', '{}.bf'.format(lib))
-            if not os.path.isfile(lib_path):
-                lib_path = '{}.bf'.format(lib)
-                if not os.path.isfile(lib_path):
-                    raise Exception(
-                        'Could not import: {}'.format(lib_path))
+            lib_path = ''
+            for base, ext in path_ext:
+                vpath = os.path.join(base, '{}{}'.format(lib, ext))
+                if os.path.isfile(vpath):
+                    lib_path = vpath
+            if not lib_path:
+                raise Exception('Could not import: {}'.format(lib))
             with open(lib_path) as flib:
-                print('importing:', lib)
+                print('importing:', lib_path)
                 bf = BrainFuck()
                 istr = ''.join(flib.readlines())
                 bf.execute(istr)
                 import_dict[lib] = bf.cmd_history
         return import_dict
 
-    def execute(self, cmd_line, MAX_RECURSION=10**4):
+    def execute(self, cmd_line, MAX_RECURSION=10**5):
         if not self.is_balanced(cmd_line):
             raise Exception("brackets not balanced!")
+
         cmds = {
             #BrainFuck commands
             '.':self._print_value,
@@ -118,7 +119,9 @@ class BrainFuck:
 
         try: 
             import_dict = self.import_lib(cmd_line)
-            cmd_line = cmd_line.format(**import_dict)
+            for key, value in import_dict.items():
+                cmd_line = cmd_line.replace(
+                    '{{{}}}'.format(key), value)
         except Exception as e:
             cmd_line = ''
             print(e)
@@ -138,7 +141,7 @@ class BrainFuck:
                 self._jump[self._jump[pos]] = pos
             pos+=1
 
-        #Execute commands, keeping track of #commands executed
+        #Execute commands, keeping track of num_commands executed
         rec_depth = 0
         while self._cmd_pointer<len(self.cmd_history):
             rec_depth += 1
@@ -227,7 +230,6 @@ def main():
         action='store_true',
         help='Initialize as shell, and accept new commands',
     )
-
     arguments = arg_parser.parse_args(sys.argv[1:])
 
     #Execute input and run the interpreter

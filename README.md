@@ -99,16 +99,22 @@ or start the interpreter
 
 ## Project Structure
 
-    advanced-brainfuck/
+    advanced-brainfuck
     ├── bflib
     │   ├── copy.bf
-    │   ├── minus_hundred.bf
-    │   ├── minus_ten.bf
+    │   ├── lower.bf
+    │   ├── m100.bf
+    │   ├── m10.bf
+    │   ├── m50.bf
     │   ├── mul2.bf
-    │   ├── plus_hundred.bf
-    │   ├── plus_ten.bf
+    │   ├── p100.bf
+    │   ├── p10.bf
+    │   ├── p50.bf
     │   ├── sub.bf
-    │   └── sum.bf
+    │   ├── sum.bf
+    │   ├── tochar.bf
+    │   ├── toint.bf
+    │   └── upper.bf
     ├── brainfuck.py
     ├── LICENSE
     ├── proj-spec.txt

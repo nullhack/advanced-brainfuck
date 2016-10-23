@@ -1,6 +1,6 @@
-|A| X X
-
-A = 2A
-X = garbage (should be 0 at the begin and will be 0 at the end of program)
+Description: Multiply current cell by two.
+Assumptions: A>0
+Begin: |A| 0 0
+End: |2A| 0 0
 
 [->++[>+<-]<]>>[-<<+>>]<<
