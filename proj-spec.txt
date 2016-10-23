@@ -22,14 +22,16 @@ Create a new instance of BrainFuck object
 >>> bf = BrainFuck()
 
 Execute commands
->>> bf.execute('+++.')
+>>> bf.execute('+++++++++++++++++++++++++++++++++++++++++++++++++++.')
 3
 >>> bf.execute('[-]')
->>> bf.execute('{bflib/plus_ten}*')
-importing: bflib/plus_ten
+>>> bf.execute('{p10}*{tochar}')
+importing: bflib/p10.bf
+importing: bflib/tochar.bf
 |10|
+
 >>> bf.execute('&')
-19 +++.[-]++++++++++*&
+115 +++++++++++++++++++++++++++++++++++++++++++++++++++.[-]++++++++++*++++++++++++++++++++++++++++++++++++++++++++++++&
 
 To initialize the interpreter from Python code:
 >> bf.interpreter()
