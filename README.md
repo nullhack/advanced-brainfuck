@@ -48,11 +48,11 @@ This project is one of the most complete Brainfuck interpreters on github today.
     
 **Step 4**: Run brainfuck COMMANDS:
 
-    python3 brainfuck.py COMMANDS
+    python3 brainfuck.py -c COMMANDS
     
 or start the interpreter
 
-    python3 brainfuck.py -s
+    python3 brainfuck.py
 
 [↑](#quick-links)
 
@@ -60,7 +60,7 @@ or start the interpreter
 
 ## Usage: 
 
-    brainfuck.py [-h] [-r MAX_RECURSION] [-s] [cmd]
+    brainfuck.py [-h] [-r MAX_RECURSION] [-c] [cmd]
 
 ### Positional arguments:
 
@@ -70,8 +70,9 @@ or start the interpreter
 
     -h, --help            show this help message and exit
     -r MAX_RECURSION, --recursion MAX_RECURSION
-                          Set MAX_RECURSION value
-    -s, --shell           Initialize as shell, and accept new commands
+                          set MAX_RECURSION value
+    -c, --command-line    do not initialize shell, running commands from
+                          arguments only
 
 [↑](#quick-links)
 
@@ -121,7 +122,6 @@ or start the interpreter
     ├── LICENSE
     ├── proj-spec.txt
     └── README.md
-
 
 [↑](#quick-links)
 

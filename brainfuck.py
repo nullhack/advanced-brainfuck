@@ -22,6 +22,7 @@ class BrainFuck:
     def _read_value(self):
         while True:
             ui = input('<< ')
+            if not ui: break
             try:
                 self.cells[self.pointer] = int(ui)
                 break
@@ -221,28 +222,26 @@ def main():
         nargs='?',
         default='',
         type=str,
-        help='BrainFuck commands',
+        help='brainFuck commands',
     )
-
     arg_parser.add_argument(
         '-r', '--recursion',
         default=10**5,
         type=int,
         metavar='MAX_RECURSION',
-        help='Set MAX_RECURSION value',
+        help='set MAX_RECURSION value',
     )
-
     arg_parser.add_argument(
-        '-s', '--shell',
+        '-c', '--command-line',
         action='store_true',
-        help='Initialize as shell, and accept new commands',
+        help='do not initialize shell, running commands from arguments only',
     )
     arguments = arg_parser.parse_args(sys.argv[1:])
 
     #Execute input and run the interpreter
     bf = BrainFuck()
     bf.execute(arguments.cmd, arguments.recursion)
-    if arguments.shell:
+    if not arguments.command_line:
         bf.interpreter(arguments.recursion)
 
 if __name__=="__main__":
