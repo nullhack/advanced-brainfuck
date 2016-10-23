@@ -60,7 +60,7 @@ or start the interpreter
 
 ## Usage: 
 
-    brainfuck.py [-h] [-s] [cmd]
+    brainfuck.py [-h] [-r MAX_RECURSION] [-s] [cmd]
 
 ### Positional arguments:
 
@@ -68,8 +68,10 @@ or start the interpreter
 
 ### Optional arguments:
 
-    -h, --help   show this help message and exit
-    -s, --shell  Initialize as shell, and accept new commands
+    -h, --help            show this help message and exit
+    -r MAX_RECURSION, --recursion MAX_RECURSION
+                          Set MAX_RECURSION value
+    -s, --shell           Initialize as shell, and accept new commands
 
 [↑](#quick-links)
 

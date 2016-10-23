@@ -1,6 +1,6 @@
-Description: Subtract 100 from current cell.
+Description: Subtract 100 from current cell
 Assumptions: None
 Begin: |A|
-End: |A-100|
+End: |A minus 100|
 
 ----------------------------------------------------------------------------------------------------

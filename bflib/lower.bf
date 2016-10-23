@@ -1,6 +1,6 @@
-Description: Apply lowercase to the current char.
-Assumptions: A is a uppercase representation of an ASCII character.
+Description: Apply lowercase to the current char
+Assumptions: A is a uppercase representation of an ASCII character
 Begin: |A|
-End: |A+32|
+End: |A plus 32|
 
 ++++++++++++++++++++++++++++++++

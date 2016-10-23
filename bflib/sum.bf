@@ -1,7 +1,7 @@
-Description: Sum current cell and next cell.
-Assumptions: B>0
+Description: Sum current cell and next cell
+Assumptions: B greater than 0
 Begin: |A| B
-End: |A+B| 0
+End: |A plus B| 0
 
 >[-<+>]<
 

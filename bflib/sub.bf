@@ -1,7 +1,7 @@
-Description: Subtract next cell from current cell.
-Assumptions: B>0.
+Description: Subtract next cell from current cell
+Assumptions: B greater than 0
 Begin: |A| B
-End: |A-B| 0
+End: |A minus B| 0
 
 >[-<->]<
 

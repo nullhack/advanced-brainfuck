@@ -1,6 +1,6 @@
-Description: Add 10 to current cell.
+Description: Add 10 to current cell
 Assumptions: None
 Begin: |A|
-End: |A+10|
+End: |A plus 10|
 
 ++++++++++

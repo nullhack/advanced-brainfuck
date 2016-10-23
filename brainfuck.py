@@ -120,8 +120,7 @@ class BrainFuck:
         try: 
             import_dict = self.import_lib(cmd_line)
             for key, value in import_dict.items():
-                cmd_line = cmd_line.replace(
-                    '{{{}}}'.format(key), value)
+                cmd_line = cmd_line.replace('{{{}}}'.format(key), value)
         except Exception as e:
             cmd_line = ''
             print(e)
@@ -155,7 +154,7 @@ class BrainFuck:
                 self.cells = backup_cells
                 break
 
-    def interpreter(self):
+    def interpreter(self, MAX_RECURSION=10**5):
         while True:
             cmd_line = input('>> ')
             while not self.is_balanced(cmd_line):
@@ -163,7 +162,7 @@ class BrainFuck:
                 cmd_line = cmd_line+tmp if tmp else 'skip'
             if cmd_line=='help': print(help_text)
             elif not cmd_line: break
-            else: self.execute(cmd_line)
+            else: self.execute(cmd_line, MAX_RECURSION)
 
 class Cells(dict):
     def __init__(self, **kwargs):
@@ -226,6 +225,14 @@ def main():
     )
 
     arg_parser.add_argument(
+        '-r', '--recursion',
+        default=10**5,
+        type=int,
+        metavar='MAX_RECURSION',
+        help='Set MAX_RECURSION value',
+    )
+
+    arg_parser.add_argument(
         '-s', '--shell',
         action='store_true',
         help='Initialize as shell, and accept new commands',
@@ -234,9 +241,9 @@ def main():
 
     #Execute input and run the interpreter
     bf = BrainFuck()
-    bf.execute(arguments.cmd)
+    bf.execute(arguments.cmd, arguments.recursion)
     if arguments.shell:
-        bf.interpreter()
+        bf.interpreter(arguments.recursion)
 
 if __name__=="__main__":
     main()

@@ -1,6 +1,6 @@
-Description: Add 50 to current cell.
+Description: Add 50 to current cell
 Assumptions: None
 Begin: |A|
-End: |A+50|
+End: |A plus 50|
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++
