@@ -1,10 +1,71 @@
+"""A module containing all classes and functions to run BrainFuck commands.
+
+    Examples:
+
+        >>> bf = BrainFuck()
+        >>> bf.execute('++++++++++++++++++++++++++++++++++++++++++++++++++.')
+        2
+        >>> bf.execute('*')
+        |50|
+        >>> bf.execute('{toint}*')
+        importing: bflib/toint.bf
+        |2|
+        >>> bf.execute('&')
+        102 ++++++++++++++++++++++++++++++++++++++++++++++++++.*------------------------------------------------*&
+        >>> BrainFuck.is_balanced('[[-][-][][{sum}+++.>]]')
+        True
+        >>> BrainFuck.is_balanced('[.[>>>[+++{sum]<<+++.]*]')
+        False
+        >>> BrainFuck.is_balanced('[.[>>>[+++[{sum}<<+++.]*]')
+        False
+
+"""
+
 import os
 import re
 import sys
 import argparse
 import itertools
 
+def help_text():
+    """Return a help text."""
+    return  """
+BrainFuck Commands
+
+    >         increment the data pointer.
+    <         decrement the data pointer.
+    +         increment the value at the data pointer.
+    -         decrement the value at the data pointer.
+    .         output the value at the data pointer.
+    ,         accept one integer of inputer.
+    [         jump if value is false.
+    ]         continue if value is true.
+
+Additional Commands
+
+    {LIB}         import external brainfuck code to current process.
+    *             output all the cells.
+    &             output command history.
+    help          show this help message."""
+
 class BrainFuck:
+    """BrainFuck language specification.
+
+    This class implements all default commands of the BrainFuck language and
+    some advanced functions.
+
+    This class also implements a full featured interpreter.
+
+    You can run both from python code or command line.
+
+    Attributes:
+        cells (Cells): Advanced structure to handle the language registers.
+        pointer (int): Pointer to current cell position.
+        cmd_history (str): String containing all the commands executed so far.
+        _cmd_pointer (int): Pointer to current command to be executed.
+        _jump (dict): A dict to handle last line of commands jump table.
+
+    """
 
     def __init__(self):
         self.cells = Cells()
@@ -14,12 +75,24 @@ class BrainFuck:
         self._jump = {}
 
     def _print_value(self):
+        """Print current cell value.
+
+        Note:
+            If the value is 0, a new line is printed.
+            If the value in ASCII table, It's printed as a char.
+            Else, the value is printed as integer.
+        """
         value = self.cells[self.pointer]
         if not value: print()
         elif value>0 and value<256: print(chr(value), end="")
         else: print(value, end="")
 
     def _read_value(self):
+        """Read a value from input into current cell.
+
+        Note:
+            Executes until a valid input is read or a blank line inserted.
+        """
         while True:
             ui = input('<< ')
             if not ui: break
@@ -35,33 +108,50 @@ class BrainFuck:
                 print("Invalid value! Please try again:")
 
     def _move_right(self):
+        """Execute '>' command by increasing pointer by 1."""
         self.pointer += 1
 
     def _move_left(self):
+        """Execute '<' command by decreasing pointer by 1."""
         self.pointer -= 1
 
     def _add(self):
+        """Execute '+' command by increasing cell by 1."""
         self.cells[self.pointer] += 1
 
     def _sub(self):
+        """Execute '-' command by decreasing cell by 1."""
         self.cells[self.pointer] -= 1
 
     def _open_brackets(self):
+        """Execute '[' command using _jump."""
         if not self.cells[self.pointer]:
             self._cmd_pointer = self._jump[self._cmd_pointer]
 
     def _close_brackets(self):
+        """Execute ']' command using _jump."""
         if self.cells[self.pointer]:
             self._cmd_pointer = self._jump[self._cmd_pointer]
 
     def print_cells(self):
+        """Print all the registers."""
         print(self.cells.print_pos(self.pointer))
 
     def print_cmd_history(self):
+        """Print all the commands executed so far."""
         print(len(self.cmd_history), self.cmd_history)
 
     @staticmethod
     def is_balanced(cmd_line):
+        """Check if a given command line is balanced or not.
+
+        Args:
+            cmd_line: The line to be verified.
+
+        Returns:
+            True if cmd_line is balanced (False if not).
+
+        """
         brackets = {'[':']','{':'}'}
         stack = []
         for cmd in cmd_line:
@@ -74,6 +164,18 @@ class BrainFuck:
 
     @staticmethod
     def import_lib(cmds):
+        """Import a set of external codes.
+
+        Args:
+            cmds: A line with one or more libs to import.
+
+        Returns:
+            import_dict (dict): A dictionary containing all the lib code.
+
+        Raises:
+            Exception: If could not import some of the external code.
+
+        """
         BASE_LIB = 'bflib'
         BASE_DIR = os.path.join(os.path.dirname(__file__))
         EXT = ['.bf', '']
@@ -97,6 +199,17 @@ class BrainFuck:
         return import_dict
 
     def execute(self, cmd_line, MAX_RECURSION=10**5):
+        """Execute a set of  BrainFuck commands.
+
+        Args:
+            cmd_line (str): A line with BrainFuck commands.
+            MAX_RECURSION (Optional[float]): Max number of commands allowed
+            to execute in current line of commands.
+
+        Raises:
+            Exception: If brackets are not balanced.
+
+        """
         if not self.is_balanced(cmd_line):
             raise Exception("brackets not balanced!")
 
@@ -156,30 +269,42 @@ class BrainFuck:
                 break
 
     def interpreter(self, MAX_RECURSION=10**5):
+        """Run the  Interpreter.
+
+        Args:
+            MAX_RECURSION (Optional[float]): Max number of commands allowed
+            to execute in current line of commands.
+
+        """
         while True:
             cmd_line = input('>> ')
             while not self.is_balanced(cmd_line):
                 tmp = input('.. ')
                 cmd_line = cmd_line+tmp if tmp else 'skip'
-            if cmd_line=='help': print(help_text)
+            if cmd_line=='help': print(help_text())
             elif not cmd_line: break
             else: self.execute(cmd_line, MAX_RECURSION)
 
 class Cells(dict):
+    """Class that modifies a dict to act like a list and save space."""
+
     def __init__(self, **kwargs):
         self[0]=0
         super(Cells, self).__init__(**kwargs)
 
     def __getitem__(self, key):
+        """Return 0 if key is not defined"""
         if key in self:
             return super(Cells, self).__getitem__(key)
         return 0
 
     def __setitem__(self, key, value):
+        """Delete cells with value 0 to save space."""
         super(Cells, self).__setitem__(key, value)
         if not value: del self[key]
 
     def backup(self):
+        """Return a copy of the cells."""
         cls = self.__class__
         new_cells = cls.__new__(cls)
         for key, value in self.items():
@@ -187,6 +312,7 @@ class Cells(dict):
         return new_cells
 
     def print_pos(self, pos):
+        """Print all the cells and the pointer."""
         if self: m, M = min(min(self), pos), max(max(self), pos)
         else: m = M = pos
         print_list = [0 for _ in range(m, M+1)]
@@ -195,26 +321,8 @@ class Cells(dict):
         print_list[pos-m] = '|{}|'.format(print_list[pos-m])
         return ' '.join(map(str, print_list))
 
-help_text = """
-BrainFuck Commands
-
-    >         increment the data pointer.
-    <         decrement the data pointer.
-    +         increment the value at the data pointer.
-    -         decrement the value at the data pointer.
-    .         output the value at the data pointer.
-    ,         accept one integer of inputer.
-    [         jump if value is false.
-    ]         continue if value is true.
-
-Additional Commands
-
-    {LIB}         import external brainfuck code to current process.
-    *             output all the cells.
-    &             output command history.
-    help          show this help message."""
-
 def main():
+    """Config parser and run command line options."""
     #Configure argparser
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
