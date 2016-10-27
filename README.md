@@ -17,6 +17,8 @@ This project is one of the most complete Brainfuck interpreters on github today.
 - [Project Structure](#project-structure)
 - [License](#license)
 
+[↑](#advanced-brainfuck)
+
 ----
 
 ## Requirements
