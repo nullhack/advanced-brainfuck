@@ -1,4 +1,4 @@
-"""A module containing all classes and functions to run BrainFuck commands.
+"""This module contains all classes and functions to run BrainFuck commands.
 
     Examples:
 
@@ -27,9 +27,7 @@ import sys
 import argparse
 import itertools
 
-def help_text():
-    """Return a help text."""
-    return  """
+help_text =  """
 BrainFuck Commands
 
     >         increment the data pointer.
@@ -51,12 +49,12 @@ Additional Commands
 class BrainFuck:
     """BrainFuck language specification.
 
-    This class implements all default commands of the BrainFuck language and
+    This class implements all commands of the BrainFuck language and
     some advanced functions.
 
     This class also implements a full featured interpreter.
 
-    You can run both from python code or command line.
+    You can run from python code or shell.
 
     Attributes:
         cells (Cells): Advanced structure to handle the language registers.
@@ -92,6 +90,7 @@ class BrainFuck:
 
         Note:
             Executes until a valid input is read or a blank line inserted.
+            
         """
         while True:
             ui = input('<< ')
@@ -134,7 +133,7 @@ class BrainFuck:
             self._cmd_pointer = self._jump[self._cmd_pointer]
 
     def print_cells(self):
-        """Print all the registers."""
+        """Print all cells."""
         print(self.cells.print_pos(self.pointer))
 
     def print_cmd_history(self):
@@ -269,7 +268,7 @@ class BrainFuck:
                 break
 
     def interpreter(self, MAX_RECURSION=10**5):
-        """Run the  Interpreter.
+        """Run the Interpreter.
 
         Args:
             MAX_RECURSION (Optional[float]): Max number of commands allowed
@@ -281,15 +280,14 @@ class BrainFuck:
             while not self.is_balanced(cmd_line):
                 tmp = input('.. ')
                 cmd_line = cmd_line+tmp if tmp else 'skip'
-            if cmd_line=='help': print(help_text())
+            if cmd_line=='help': print(help_text)
             elif not cmd_line: break
             else: self.execute(cmd_line, MAX_RECURSION)
 
 class Cells(dict):
-    """Class that modifies a dict to act like a list and save space."""
+    """Modifies a dict to act like a list and save space."""
 
     def __init__(self, **kwargs):
-        self[0]=0
         super(Cells, self).__init__(**kwargs)
 
     def __getitem__(self, key):
@@ -321,7 +319,7 @@ class Cells(dict):
         print_list[pos-m] = '|{}|'.format(print_list[pos-m])
         return ' '.join(map(str, print_list))
 
-def main():
+def main(args=[]):
     """Config parser and run command line options."""
     #Configure argparser
     arg_parser = argparse.ArgumentParser()
@@ -344,7 +342,7 @@ def main():
         action='store_true',
         help='do not initialize shell, running commands from arguments only',
     )
-    arguments = arg_parser.parse_args(sys.argv[1:])
+    arguments = arg_parser.parse_args(args)
 
     #Execute input and run the interpreter
     bf = BrainFuck()
@@ -353,4 +351,4 @@ def main():
         bf.interpreter(arguments.recursion)
 
 if __name__=="__main__":
-    main()
+    main(sys.argv[1:])
