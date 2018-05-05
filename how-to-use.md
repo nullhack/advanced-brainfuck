@@ -6,11 +6,15 @@ The sequence of initialization is as follow:
 
 from command line:
 
+```
 python3 brainfuck.py -c '+++.>+>[-]*&'
+```
 
 or executing shell after running commands:
 
+```
 python3 brainfuck.py '+++.>+>[-]*&'
+```
 
 ---
 
