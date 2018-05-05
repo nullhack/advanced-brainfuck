@@ -122,7 +122,7 @@ or start the interpreter
     │   └── upper.bf
     ├── brainfuck.py
     ├── LICENSE
-    ├── proj-spec.txt
+    ├── how-to-use.md
     └── README.md
 
 [↑](#quick-links)
