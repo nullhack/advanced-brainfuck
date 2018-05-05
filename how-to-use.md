@@ -6,22 +6,31 @@ The sequence of initialization is as follow:
 
 from command line:
 
-python3 brainfuck.py '+++.>+>[-]*&'
+python3 brainfuck.py -c '+++.>+>[-]*&'
 
 or executing shell after running commands:
 
-python3 brainfuck.py '+++.>+>[-]*&' -s
+python3 brainfuck.py '+++.>+>[-]*&'
 
+---
 
 Execution from Python programs is simple:
 
 Import BrainFuck class from brainfuck module
+
+```
 >>> from brainfuck import BrainFuck
+```
 
 Create a new instance of BrainFuck object
+
+```
 >>> bf = BrainFuck()
+```
 
 Execute commands
+
+```
 >>> bf.execute('+++++++++++++++++++++++++++++++++++++++++++++++++++.')
 3
 >>> bf.execute('[-]')
@@ -32,6 +41,9 @@ importing: bflib/tochar.bf
 
 >>> bf.execute('&')
 115 +++++++++++++++++++++++++++++++++++++++++++++++++++.[-]++++++++++*++++++++++++++++++++++++++++++++++++++++++++++++&
+```
 
 To initialize the interpreter from Python code:
+```
 >> bf.interpreter()
+```
