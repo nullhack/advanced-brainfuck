@@ -18,7 +18,7 @@ python3 brainfuck.py '+++.>+>[-]*&'
 
 ---
 
-Execution from Python programs is simple:
+Execution inside your module:
 
 Import BrainFuck class from brainfuck module
 
