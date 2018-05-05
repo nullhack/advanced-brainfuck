@@ -46,7 +46,7 @@ This project is one of the most complete Brainfuck interpreters on github today.
 
 **Step 3**: *(Optional)* Run the tests:
 
-    python3 -m doctest -v ./proj-spec.txt
+    python3 -m doctest -v ./how-to-use.md
     
 **Step 4**: Run brainfuck COMMANDS:
 
