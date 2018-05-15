@@ -8,6 +8,7 @@ from command line:
 
 ```
 python3 brainfuck.py -c '+++.>+>[-]*&'
+
 ```
 
 or executing shell after running commands:
@@ -24,12 +25,14 @@ Import BrainFuck class from brainfuck module
 
 ```
 >>> from brainfuck import BrainFuck
+
 ```
 
 Create a new instance of BrainFuck object
 
 ```
 >>> bf = BrainFuck()
+
 ```
 
 Execute commands
@@ -45,6 +48,7 @@ importing: bflib/tochar.bf
 
 >>> bf.execute('&')
 115 +++++++++++++++++++++++++++++++++++++++++++++++++++.[-]++++++++++*++++++++++++++++++++++++++++++++++++++++++++++++&
+
 ```
 
 To initialize the interpreter from Python code:
