@@ -2,8 +2,6 @@
 
 This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are available, e.g. Import external libs, Cells print, Command history.
 
-This project is one of the most complete Brainfuck interpreters on github today.
-
 ----
 
 ## Quick links
