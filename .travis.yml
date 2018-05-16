@@ -6,3 +6,4 @@ python:
   - "3.6"
 script:
   - python -m doctest -v how-to-use.md
+  - python -m doctest -v brainfuck.py
