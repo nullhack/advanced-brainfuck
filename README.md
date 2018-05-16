@@ -1,3 +1,7 @@
+|Branch             |Build status                                                  
+|-------------------|-----------------------------------------------------
+|master             |[![master branch build status](https://api.travis-ci.com/nullhack/advanced-brainfuck.svg?branch=master)](https://travis-ci.com/nullhack/advanced-brainfuck)
+
 # advanced-brainfuck
 
 This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are available, e.g. Import external libs, Cells print, Command history.
@@ -21,7 +25,7 @@ This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/
 
 ## Requirements
 
-* [python](https://www.python.org/download/releases/3.0/) >= 3.2
+* [python](https://www.python.org/download/releases/3.0/) >= 2.7
 
 [↑](#quick-links)
 
@@ -44,11 +48,11 @@ This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/
 
 **Step 3**: *(Optional)* Run the tests:
 
-    python3 -m doctest -v ./how-to-use.md
+    python -m doctest -v ./how-to-use.md
     
 **Step 4**: Run brainfuck COMMANDS:
 
-    python3 brainfuck.py -c COMMANDS
+    python brainfuck.py -c COMMANDS
     
 or start the interpreter
 
