@@ -26,6 +26,7 @@ import re
 import sys
 import argparse
 import itertools
+from __future__ import print_function
 
 help_text =  """
 BrainFuck Commands
