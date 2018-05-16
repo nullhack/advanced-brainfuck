@@ -54,7 +54,7 @@ This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/
     
 or start the interpreter
 
-    python3 brainfuck.py
+    python brainfuck.py
 
 [↑](#quick-links)
 
