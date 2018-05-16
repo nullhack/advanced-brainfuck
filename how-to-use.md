@@ -53,7 +53,6 @@ importing: bflib/tochar.bf
 
 To initialize the interpreter from Python code:
 ```
->>> bf.interpreter()
->> 
+bf.interpreter()
 
 ```
