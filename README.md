@@ -1,6 +1,4 @@
-|Branch             |Build status                                                  
-|-------------------|-----------------------------------------------------
-|master             |[![master branch build status](https://api.travis-ci.com/nullhack/advanced-brainfuck.svg?branch=master)](https://travis-ci.com/nullhack/advanced-brainfuck)
+[![master branch build status](https://api.travis-ci.com/nullhack/advanced-brainfuck.svg?branch=master)](https://travis-ci.com/nullhack/advanced-brainfuck)
 
 # advanced-brainfuck
 
