@@ -4,10 +4,6 @@ python:
   - "2.7"
   - "3.3"
   - "3.6"
- os:
-  - linux
-  - osx
-  - windows
 script:
   - python -m doctest -v how-to-use.md
   - python -m doctest -v brainfuck.py
