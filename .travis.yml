@@ -2,14 +2,10 @@ language: python
 os:
   - linux
 python:
-  - 2.6
   - 2.7
   - 3.2
-  - 3.3
   - 3.6
   - pypy
-install:
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install importlib unittest2; fi
 script:
   - python -m doctest -v how-to-use.md
   - python -m doctest -v brainfuck.py
