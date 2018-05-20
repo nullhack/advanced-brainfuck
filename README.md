@@ -112,7 +112,7 @@ or start the interpreter
     │   ├── m10.bf
     │   ├── m50.bf
     │   ├── mul2.bf
-    │   ├── mul.bf
+    │   ├── mul.bf
     │   ├── p100.bf
     │   ├── p10.bf
     │   ├── p50.bf
@@ -125,6 +125,7 @@ or start the interpreter
     ├── LICENSE
     ├── how-to-use.md
     └── README.md
+    
 
 [↑](#quick-links)
 
