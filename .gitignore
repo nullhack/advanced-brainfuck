@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# smith managed
+.flowr/
+.opencode/
+.templates/
+AGENTS.md
+# end smith managed

@@ -1,10 +1,13 @@
 [project]
 name = "advanced-brainfuck"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.0"
+description = "High-performance Brainfuck interpreter with JIT acceleration, library imports, and interactive REPL"
 readme = "README.md"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.13"
+dependencies = [
+    "numba>=0.58.0",
+    "numpy>=1.24.0",
+]
 
 [project.scripts]
 brainfuck = "brainfuck:main"
@@ -12,4 +15,5 @@ brainfuck = "brainfuck:main"
 [dependency-groups]
 dev = [
     "agents-smith>=1.0.0",
+    "pytest>=9.0.3",
 ]

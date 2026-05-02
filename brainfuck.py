@@ -27,6 +27,19 @@ import sys
 import argparse
 import itertools
 from collections import defaultdict
+import numpy as np
+from numba import jit, types
+from numba.typed import List
+
+# Operation codes for JIT compilation
+OP_ADD = 0
+OP_MOVE = 1
+OP_OUTPUT = 2
+OP_INPUT = 3
+OP_JUMP_ZERO = 4
+OP_JUMP_NZ = 5
+OP_PRINT_CELLS = 6
+OP_PRINT_HISTORY = 7
 
 help_text =  """
 BrainFuck Commands
@@ -46,6 +59,96 @@ Additional Commands
     *             output all the cells.
     &             output command history.
     help          show this help message."""
+
+@jit(nopython=True)
+def execute_jit(program, tape_size=30000, max_iterations=100000):
+    """JIT-compiled BrainFuck execution engine.
+    
+    Args:
+        program: NumPy array of (op_code, arg) pairs
+        tape_size: Size of the memory tape
+        max_iterations: Maximum iterations to prevent infinite loops
+        
+    Returns:
+        (output_values, final_tape, final_pointer, iterations_used)
+    """
+    tape = np.zeros(tape_size, dtype=np.int32)
+    pointer = tape_size // 2  # Start in middle to allow negative movement
+    pc = 0
+    iterations = 0
+    
+    # Collect output values
+    output_values = np.empty(1000, dtype=np.int32)  # Pre-allocate output buffer
+    output_count = 0
+    
+    while pc < len(program) and iterations < max_iterations:
+        op_code = program[pc, 0]
+        arg = program[pc, 1]
+        
+        if op_code == OP_ADD:
+            tape[pointer] += arg
+        elif op_code == OP_MOVE:
+            new_pointer = pointer + arg
+            if 0 <= new_pointer < tape_size:
+                pointer = new_pointer
+        elif op_code == OP_OUTPUT:
+            if output_count < len(output_values):
+                output_values[output_count] = tape[pointer]
+                output_count += 1
+        elif op_code == OP_JUMP_ZERO:
+            if tape[pointer] == 0:
+                pc = arg
+                continue
+        elif op_code == OP_JUMP_NZ:
+            if tape[pointer] != 0:
+                pc = arg
+                continue
+        # Note: INPUT, PRINT_CELLS, PRINT_HISTORY need special handling outside JIT
+        
+        pc += 1
+        iterations += 1
+    
+    # Return only the used portion of output
+    return output_values[:output_count], tape, pointer, iterations
+
+@jit(nopython=True)
+def convert_ir_to_numeric_jit(op_codes, args):
+    """Convert parallel arrays to numeric format for JIT compilation."""
+    program = np.empty((len(op_codes), 2), dtype=np.int32)
+    
+    for i in range(len(op_codes)):
+        program[i, 0] = op_codes[i]
+        program[i, 1] = args[i]
+            
+    return program
+
+def convert_ir_to_numeric(ir_list):
+    """Convert IR tuples to numeric format for JIT compilation."""
+    if not ir_list:
+        return np.empty((0, 2), dtype=np.int32)
+        
+    op_codes = np.empty(len(ir_list), dtype=np.int32)
+    args = np.empty(len(ir_list), dtype=np.int32)
+    
+    op_map = {
+        'add': OP_ADD,
+        'move': OP_MOVE,
+        'output': OP_OUTPUT,
+        'input': OP_INPUT,
+        'jump_zero': OP_JUMP_ZERO,
+        'jump_nz': OP_JUMP_NZ,
+        'print_cells': OP_PRINT_CELLS,
+        'print_history': OP_PRINT_HISTORY,
+    }
+    
+    for i, ir_op in enumerate(ir_list):
+        op_name = ir_op[0]
+        arg = ir_op[1] if len(ir_op) > 1 else 0
+        
+        op_codes[i] = op_map.get(op_name, 0)
+        args[i] = arg
+        
+    return convert_ir_to_numeric_jit(op_codes, args)
 
 class BrainFuck:
     """BrainFuck language specification.
@@ -161,7 +264,7 @@ class BrainFuck:
         BASE_DIR = os.path.join(os.path.dirname(__file__))
         EXT = ['.bf', '']
         
-        import_list = re.findall('\{([a-zA-Z0-9_\.\-\/]+)\}', cmd_line)
+        import_list = re.findall(r'\{([a-zA-Z0-9_\.\-\/]+)\}', cmd_line)
         path_ext = list(itertools.product([BASE_LIB, BASE_DIR], EXT))
         
         for lib in import_list:
@@ -207,7 +310,7 @@ class BrainFuck:
         """
         # For backward compatibility - just return the resolved imports
         resolved = BrainFuck._resolve_imports(cmds)
-        import_list = re.findall('\{([a-zA-Z0-9_\.\-\/]+)\}', cmds)
+        import_list = re.findall(r'\{([a-zA-Z0-9_\.\-\/]+)\}', cmds)
         
         # Extract each library's content for the return dict
         import_dict = {}
@@ -322,18 +425,82 @@ class BrainFuck:
         self._cmd_parts.append(expanded_cmd_line)
         
         # Compile to IR (pass the already-resolved command line)
-        program = self._compile_to_ir(expanded_cmd_line)
+        ir_program = self._compile_to_ir(expanded_cmd_line)
         
-        # Execute IR
-        pc = 0
-        exec_count = 0
+        if not ir_program:
+            return
         
+        # Separate JIT-compatible operations from those requiring Python interaction
+        jit_ops = []
+        special_ops = []  # Operations that need special handling outside JIT
+        
+        for i, op in enumerate(ir_program):
+            if op[0] in ('add', 'move', 'output', 'jump_zero', 'jump_nz'):
+                jit_ops.append((i, op))
+            else:
+                special_ops.append((i, op))
+        
+        # If we have only JIT-compatible operations, use the fast path
+        if not special_ops:
+            try:
+                # Convert to NumPy arrays for JIT execution
+                numeric_program = convert_ir_to_numeric(ir_program)
+                
+                # Convert current cell state to NumPy
+                tape_size = 30000
+                tape_array = np.zeros(tape_size, dtype=np.int32)
+                tape_center = tape_size // 2
+                
+                # Copy current cells to the tape array
+                for pos, value in self.cells._sparse.items():
+                    if tape_center + pos >= 0 and tape_center + pos < tape_size:
+                        tape_array[tape_center + pos] = value
+                        
+                # Copy from the list-backed portion
+                for i, value in enumerate(self.cells._tape):
+                    if i < len(self.cells._tape) and tape_center + i < tape_size:
+                        tape_array[tape_center + i] = value
+                
+                # Execute with JIT
+                output_values, final_tape, final_pointer, iterations = execute_jit(
+                    numeric_program, tape_size, MAX_RECURSION
+                )
+                
+                # Update state from JIT results
+                self.pointer = final_pointer - tape_center
+                
+                # Update cells from final tape
+                self.cells = Cells()
+                for i, value in enumerate(final_tape):
+                    if value != 0:
+                        pos = i - tape_center
+                        self.cells[pos] = value
+                
+                # Print output values
+                for value in output_values:
+                    if not value: 
+                        print()
+                    elif value > 0 and value < 256: 
+                        print(chr(value), end="")
+                    else: 
+                        print(value, end="")
+                        
+                return
+                
+            except Exception as e:
+                # Fall back to interpreted execution on JIT errors
+                pass
+        
+        # Fall back to interpreted execution for mixed operations or JIT failures
         backup_cells = self.cells.backup()
         backup_pointer = self.pointer
         
         try:
-            while pc < len(program) and exec_count < MAX_RECURSION:
-                op = program[pc]
+            pc = 0
+            exec_count = 0
+            
+            while pc < len(ir_program) and exec_count < MAX_RECURSION:
+                op = ir_program[pc]
                 tag = op[0]
                 
                 if tag == 'add':
