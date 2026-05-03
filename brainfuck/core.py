@@ -708,7 +708,7 @@ class Cells:
         return ' '.join(print_list)
 
 
-def main(args=[]):
+def main(args=None):
     """Config parser and run command line options."""
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
