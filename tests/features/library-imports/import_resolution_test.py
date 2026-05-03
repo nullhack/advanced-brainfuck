@@ -1,4 +1,3 @@
-import pytest
 from brainfuck import BrainFuck
 
 

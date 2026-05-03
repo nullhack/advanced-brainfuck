@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "advanced-brainfuck"
-version = "2.0.0"
+version = "2.1.0"
 description = "High-performance Brainfuck interpreter with JIT acceleration, library imports, and interactive REPL"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -27,12 +27,18 @@ Documentation = "https://github.com/nullhack/advanced-brainfuck#readme"
 
 [project.optional-dependencies]
 dev = [
-    "agents-smith>=1.0.0",
     "pytest>=9.0.3",
     "pytest-cov>=6.1.1",
     "ruff>=0.11.5",
     "taskipy>=1.14.1",
+    "build>=1.2.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["brainfuck*"]
+
+[tool.setuptools.package-data]
+brainfuck = ["bflib/*.bf"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
@@ -43,7 +49,7 @@ preview = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py"]
+python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]
 addopts = "--tb=short -q"
 

@@ -4,9 +4,16 @@ These tests verify implementation contracts not covered by BDD feature tests.
 They belong in tests/unit/ because they exercise internal methods (_compile_to_ir,
 convert_ir_to_numeric) rather than the public API entry points.
 """
-import pytest
-import numpy as np
-from brainfuck import BrainFuck, Cells, convert_ir_to_numeric, OP_ADD, OP_MOVE, OP_OUTPUT, OP_JUMP_ZERO, OP_JUMP_NZ
+from brainfuck import (
+    OP_ADD,
+    OP_JUMP_NZ,
+    OP_JUMP_ZERO,
+    OP_MOVE,
+    OP_OUTPUT,
+    BrainFuck,
+    Cells,
+    convert_ir_to_numeric,
+)
 
 
 class TestIRCompilation:
