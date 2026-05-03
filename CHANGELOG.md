@@ -2,6 +2,13 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
+## [2.1.2] - 20260503
+
+### Added
+
+- GitHub Pages documentation site (`docs/index.html`) with project branding
+- Static documentation landing page linking to specs, ADRs, source, and PyPI
+
 ## [2.1.1] - 20260503
 
 ### Removed
