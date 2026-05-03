@@ -4,6 +4,8 @@
 
 A high-performance Brainfuck language interpreter for Python with JIT acceleration, library imports, and an interactive REPL.
 
+**[Documentation](https://nullhack.github.io/advanced-brainfuck/)** | **[PyPI](https://pypi.org/project/advanced-brainfuck/)** | **[Changelog](CHANGELOG.md)**
+
 ---
 
 ## Features

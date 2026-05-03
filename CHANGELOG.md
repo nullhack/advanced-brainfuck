@@ -2,6 +2,20 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
+## [2.1.1] - 20260503
+
+### Removed
+
+- `.travis.yml` — obsolete CI config (project uses GitHub Actions)
+- `conftest.py` — unnecessary sys.path hack (package imports work natively)
+- `how-to-use.md` — content covered by README.md
+
+### Changed
+
+- Default branch renamed from `master` to `main`
+- Added GitHub Pages, PyPI, and Changelog links to README
+- Cleaned up `.gitignore` (removed stale entries, added build artifacts)
+
 ## [2.1.0] - 20260503
 
 ### Added
