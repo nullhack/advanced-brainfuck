@@ -1,13 +1,16 @@
 # advanced-brainfuck
 
+![advanced-brainfuck](docs/assets/banner.svg)
+
 A high-performance Brainfuck language interpreter for Python with JIT acceleration, library imports, and an interactive REPL.
 
 ---
 
 ## Features
 
-- **JIT-accelerated execution** — Compiles Brainfuck programs to an intermediate representation (IR) with run-length encoding, then executes via Numba's `@jit(nopython=True)` for 3-5x speedup on pure-computation programs
-- **Interpreted fallback** — Programs with input (`,`), cell display (`*`), or history (`&`) commands fall back to an interpreted IR path with full compatibility
+- **JIT-accelerated execution** — Compiles Brainfuck programs to an intermediate representation (IR) with run-length encoding, then executes via Numba's `@jit(nopython=True)` for 3-5x speedup
+- **Segmented JIT with checkpoints** — All programs use the JIT path; I/O operations (`,`, `*`, `&`) trigger checkpoints where Python handles input/output before resuming JIT execution
+- **Interpreted fallback** — If JIT compilation fails, falls back to interpreted IR execution with full compatibility
 - **Library system** — Import external `.bf` files with `{libname}` syntax; recursive imports supported
 - **Interactive REPL** — Run `brainfuck` with no arguments for an interactive shell
 - **Python API** — `from brainfuck import BrainFuck` for programmatic use
@@ -92,16 +95,22 @@ The `bflib/` directory contains reusable Brainfuck modules:
 
 ```
 Source Code → Import Resolution → IR Compilation → Execution
-                                                       ↓
-                                              ┌──── JIT Path ────┐
-                                              │ (no , * & cmds)  │
-                                              │ execute_jit()     │
-                                              │ via Numba         │
-                                              └───────────────────┘
-                                              ┌── Interpreted ────┐
-                                              │ (has , * & cmds)  │
-                                              │ Python IR loop    │
-                                              └───────────────────┘
+                                                        ↓
+                                               ┌── Segmented JIT ──┐
+                                               │ execute_jit()      │
+                                               │ via Numba          │
+                                               │                    │
+                                               │ Checkpoints at:    │
+                                               │  , * &             │
+                                               │                    │
+                                               │ Python handles I/O │
+                                               │ then resumes JIT   │
+                                               └────────────────────┘
+                                               ┌── Fallback ────────┐
+                                               │ (JIT compilation   │
+                                               │  failure only)     │
+                                               │ Python IR loop     │
+                                               └────────────────────┘
 ```
 
 ### IR Compilation
@@ -113,7 +122,7 @@ Source code is compiled to an intermediate representation with:
 
 ### Tape Memory
 
-Cells use a hybrid storage model:
+Cells use a pre-allocated NumPy tape of 65,536 cells (64K) for JIT execution, with a hybrid Python storage model for the REPL:
 - Pre-allocated list of 30,000 integers for indices 0-29,999 (O(1) access)
 - Sparse `defaultdict` for negative indices (rarely used but supported)
 

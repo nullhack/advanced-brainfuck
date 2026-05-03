@@ -7,7 +7,7 @@
 ## What advanced-brainfuck IS
 
 - A Brainfuck language interpreter that executes Brainfuck programs from Python code or the command line
-- A JIT-accelerated execution engine that compiles Brainfuck programs to an intermediate representation and runs them via Numba
+- A JIT-accelerated execution engine that compiles Brainfuck programs to an intermediate representation and runs them via Numba, with segmented checkpoint/resume for I/O operations
 - A library system that allows importing external Brainfuck code modules into running programs
 
 ## What advanced-brainfuck IS NOT

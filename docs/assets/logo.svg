@@ -1,15 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" fill="#1E1E2E" rx="16"/>
-  <rect x="64" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="116" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="168" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="220" y="256" width="40" height="56" fill="#F9E2AF" rx="4"/>
-  <rect x="272" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="324" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="376" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <rect x="428" y="256" width="40" height="56" fill="#CDD6F4" rx="4"/>
-  <polygon points="240,326 240,340 220,340 220,350 260,350 260,340 240,340" fill="#89B4FA"/>
-  <text x="256" y="420" text-anchor="middle" font-family="monospace" font-size="28" fill="#6C7086">+ - &gt; &lt; [ ] . ,</text>
-  <text x="256" y="190" text-anchor="middle" font-family="monospace" font-size="32" font-weight="bold" fill="#CDD6F4">advanced</text>
-  <text x="256" y="228" text-anchor="middle" font-family="monospace" font-size="32" font-weight="bold" fill="#89B4FA">brainfuck</text>
+  <!-- Advanced BrainFuck Logo - Balanced Proportions
+       Clean geometric design with optimal spacing and thickness
+       Palette: #0B1026 bg, #6A7AA0 brackets, #F0F0F0 arrows, #FFB800 dot -->
+
+  <rect width="512" height="512" fill="#0B1026" rx="16"/>
+
+  <!-- Left bracket (refined proportions) -->
+  <rect x="75" y="75" width="18" height="362" rx="6" fill="#6A7AA0"/>
+  <rect x="75" y="75" width="90" height="18" rx="6" fill="#6A7AA0"/>
+  <rect x="75" y="419" width="90" height="18" rx="6" fill="#6A7AA0"/>
+
+  <!-- Right bracket (refined proportions) -->
+  <rect x="419" y="75" width="18" height="362" rx="6" fill="#6A7AA0"/>
+  <rect x="347" y="75" width="90" height="18" rx="6" fill="#6A7AA0"/>
+  <rect x="347" y="419" width="90" height="18" rx="6" fill="#6A7AA0"/>
+
+  <!-- Optimized symbols (balanced spacing) -->
+  <polygon points="130,256 195,195 195,225 150,256 195,287 195,317" fill="#F0F0F0"/>
+  <circle cx="256" cy="256" r="45" fill="#FFB800"/>
+  <polygon points="382,256 317,195 317,225 362,256 317,287 317,317" fill="#F0F0F0"/>
 </svg>
