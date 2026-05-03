@@ -4,6 +4,7 @@ These tests verify implementation contracts not covered by BDD feature tests.
 They belong in tests/unit/ because they exercise internal methods (_compile_to_ir,
 convert_ir_to_numeric) rather than the public API entry points.
 """
+
 from brainfuck import (
     OP_ADD,
     OP_JUMP_NZ,
@@ -21,75 +22,75 @@ class TestIRCompilation:
 
     def test_add_rle_collapses_five_increments(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('+++++')
-        assert ir == [('add', 5)]
+        ir = bf._compile_to_ir("+++++")
+        assert ir == [("add", 5)]
 
     def test_sub_rle_collapses_five_decrements(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('-----')
-        assert ir == [('add', -5)]
+        ir = bf._compile_to_ir("-----")
+        assert ir == [("add", -5)]
 
     def test_move_right_rle(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('>>>')
-        assert ir == [('move', 3)]
+        ir = bf._compile_to_ir(">>>")
+        assert ir == [("move", 3)]
 
     def test_move_left_rle(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('<<<')
-        assert ir == [('move', -3)]
+        ir = bf._compile_to_ir("<<<")
+        assert ir == [("move", -3)]
 
     def test_mixed_commands_not_collapsed(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('+.')
-        assert ir == [('add', 1), ('output',)]
+        ir = bf._compile_to_ir("+.")
+        assert ir == [("add", 1), ("output",)]
 
     def test_jump_targets_patched(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('[-]')
-        assert ir[0] == ('jump_zero', 3)
-        assert ir[1] == ('add', -1)
-        assert ir[2] == ('jump_nz', 0)
+        ir = bf._compile_to_ir("[-]")
+        assert ir[0] == ("jump_zero", 3)
+        assert ir[1] == ("add", -1)
+        assert ir[2] == ("jump_nz", 0)
 
     def test_nested_loops_patched(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('[->[+]]')
-        jump_zeros = [op for op in ir if op[0] == 'jump_zero']
-        jump_nzs = [op for op in ir if op[0] == 'jump_nz']
+        ir = bf._compile_to_ir("[->[+]]")
+        jump_zeros = [op for op in ir if op[0] == "jump_zero"]
+        jump_nzs = [op for op in ir if op[0] == "jump_nz"]
         assert len(jump_zeros) == 2
         assert len(jump_nzs) == 2
 
     def test_empty_program_returns_empty_ir(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('')
+        ir = bf._compile_to_ir("")
         assert ir == []
 
     def test_non_bf_chars_filtered(self):
         bf = BrainFuck()
-        ir = bf._compile_to_ir('hello world+++')
-        assert ir == [('add', 3)]
+        ir = bf._compile_to_ir("hello world+++")
+        assert ir == [("add", 3)]
 
 
 class TestNumericIRConversion:
     """Contract tests for convert_ir_to_numeric."""
 
     def test_add_opcode(self):
-        result = convert_ir_to_numeric([('add', 5)])
+        result = convert_ir_to_numeric([("add", 5)])
         assert result[0, 0] == OP_ADD
         assert result[0, 1] == 5
 
     def test_move_opcode(self):
-        result = convert_ir_to_numeric([('move', -3)])
+        result = convert_ir_to_numeric([("move", -3)])
         assert result[0, 0] == OP_MOVE
         assert result[0, 1] == -3
 
     def test_output_opcode(self):
-        result = convert_ir_to_numeric([('output',)])
+        result = convert_ir_to_numeric([("output",)])
         assert result[0, 0] == OP_OUTPUT
         assert result[0, 1] == 0
 
     def test_jump_opcodes(self):
-        result = convert_ir_to_numeric([('jump_zero', 5), ('add', 1), ('jump_nz', 0)])
+        result = convert_ir_to_numeric([("jump_zero", 5), ("add", 1), ("jump_nz", 0)])
         assert result[0, 0] == OP_JUMP_ZERO
         assert result[0, 1] == 5
         assert result[2, 0] == OP_JUMP_NZ
@@ -134,4 +135,4 @@ class TestCells:
         cells = Cells()
         cells[0] = 5
         result = cells.print_pos(0)
-        assert '|5|' in result
+        assert "|5|" in result
