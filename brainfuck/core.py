@@ -66,7 +66,9 @@ Additional Commands
     {LIB}         import external brainfuck code to current process.
     *             output all the cells.
     &             output command history.
-    help          show this help message."""
+    help          show this help message.
+    quit          exit the interpreter.
+    save [FILE]   save tape state to JSON (default: tape.json)."""
 
 
 @jit(nopython=True)
@@ -97,7 +99,7 @@ def execute_jit(program, tape, state, output_buf, max_iterations):
         arg = program[pc, 1]
 
         if op_code == OP_ADD:
-            tape[pointer] += arg
+            tape[pointer] = (tape[pointer] + arg) & 0xFF
         elif op_code == OP_MOVE:
             new_pointer = pointer + arg
             if 0 <= new_pointer < len(tape):
@@ -211,63 +213,51 @@ class BrainFuck:
         self._cmd_parts = []
         self._pc = 0
 
-    def _print_value(self):
-        """Print current cell value.
-
-        Note:
-            If the value is 0, a new line is printed.
-            If the value in ASCII table, It's printed as a char.
-            Else, the value is printed as integer.
-        """
+    def _print_value(self, output_file=None):
         value = self.cells[self.pointer]
         if not value:
-            print()
+            print(file=output_file)
         elif value > 0 and value < 256:
-            print(chr(value), end="")
+            print(chr(value), end="", file=output_file)
         else:
-            print(value, end="")
+            print(value, end="", file=output_file)
 
     def _read_value(self):
-        """Read a value from input into current cell.
-
-        Note:
-            Executes until a valid input is read or a blank line inserted.
-
-        """
-        while True:
-            ui = input('<< ')
-            if not ui:
-                break
-            try:
-                self.cells[self.pointer] = int(ui)
-                break
-            except (ValueError, TypeError):
-                pass
-            try:
-                self.cells[self.pointer] = ord(ui)
-                break
-            except (ValueError, TypeError):
-                print("Invalid value! Please try again:")
+        try:
+            while True:
+                ui = input('<< ')
+                if not ui:
+                    break
+                try:
+                    self.cells[self.pointer] = int(ui)
+                    break
+                except (ValueError, TypeError):
+                    pass
+                try:
+                    self.cells[self.pointer] = ord(ui[0])
+                    break
+                except (ValueError, TypeError):
+                    print("Invalid value! Please try again:")
+        except EOFError:
+            self.cells[self.pointer] = -1
 
     @staticmethod
     def _read_input_direct():
-        """Read input value directly, without using Cells.
-
-        Returns:
-            int value, or None for blank input (cell unchanged).
-        """
-        while True:
-            ui = input('<< ')
-            if not ui:
-                return None
-            try:
-                return int(ui)
-            except (ValueError, TypeError):
-                pass
-            try:
-                return ord(ui)
-            except (ValueError, TypeError):
-                print("Invalid value! Please try again:")
+        try:
+            while True:
+                ui = input('<< ')
+                if not ui:
+                    return None
+                try:
+                    return int(ui)
+                except (ValueError, TypeError):
+                    pass
+                try:
+                    return ord(ui[0])
+                except (ValueError, TypeError):
+                    print("Invalid value! Please try again:")
+        except EOFError:
+            return -1
 
     def print_cells(self):
         """Print all cells."""
@@ -452,20 +442,25 @@ class BrainFuck:
                 self.cells[i - tape_center] = int(tape[i])
 
     @staticmethod
-    def _flush_outputs(output_buf, count):
-        """Print accumulated output values."""
+    def _flush_outputs(output_buf, count, output_file=None):
         for i in range(count):
             value = int(output_buf[i])
             if not value:
-                print()
+                print(file=output_file)
             elif 0 < value < 256:
-                print(chr(value), end="")
+                print(chr(value), end="", file=output_file)
             else:
-                print(value, end="")
+                print(value, end="", file=output_file)
 
     def _execute_segmented_jit(
-        self, numeric_program, tape, tape_center, state, output_buf,
+        self,
+        numeric_program,
+        tape,
+        tape_center,
+        state,
+        output_buf,
         max_iterations,
+        output_file=None,
     ):
         """Execute program using segmented JIT with Python I/O checkpoints.
 
@@ -491,7 +486,7 @@ class BrainFuck:
             )
             remaining -= iters
 
-            self._flush_outputs(output_buf, state[2])
+            self._flush_outputs(output_buf, state[2], output_file)
             state[2] = 0
 
             if status == STATUS_NEED_INPUT:
@@ -518,7 +513,7 @@ class BrainFuck:
 
         return False
 
-    def _execute_interpreted(self, ir_program, max_iterations):
+    def _execute_interpreted(self, ir_program, max_iterations, output_file=None):
         """Fallback interpreted execution for when JIT is unavailable."""
         backup_cells = self.cells.backup()
         backup_pointer = self.pointer
@@ -532,11 +527,13 @@ class BrainFuck:
                 tag = op[0]
 
                 if tag == 'add':
-                    self.cells[self.pointer] += op[1]
+                    self.cells[self.pointer] = (
+                        self.cells[self.pointer] + op[1]
+                    ) & 0xFF
                 elif tag == 'move':
                     self.pointer += op[1]
                 elif tag == 'output':
-                    self._print_value()
+                    self._print_value(output_file)
                 elif tag == 'input':
                     self._read_value()
                 elif tag == 'jump_zero':
@@ -562,18 +559,7 @@ class BrainFuck:
             if self._cmd_parts:
                 self._cmd_parts.pop()
 
-    def execute(self, cmd_line, MAX_RECURSION=10**5):
-        """Execute a set of BrainFuck commands.
-
-        Args:
-            cmd_line (str): A line with BrainFuck commands.
-            MAX_RECURSION (Optional[float]): Max number of commands allowed
-            to execute in current line of commands.
-
-        Raises:
-            Exception: If brackets are not balanced.
-
-        """
+    def execute(self, cmd_line, MAX_RECURSION=10**5, output_file=None):
         if not self.is_balanced(cmd_line):
             raise Exception("brackets not balanced!")
 
@@ -615,23 +601,45 @@ class BrainFuck:
             output_buf = np.empty(OUTPUT_BUF_SIZE, dtype=np.int32)
 
             self._execute_segmented_jit(
-                numeric_program, tape, tape_center, state, output_buf, MAX_RECURSION
+                numeric_program,
+                tape,
+                tape_center,
+                state,
+                output_buf,
+                MAX_RECURSION,
+                output_file,
             )
 
             self._sync_cells_from_tape(tape, tape_center)
             self.pointer = int(state[0]) - tape_center
 
         except Exception:
-            self._execute_interpreted(ir_program, MAX_RECURSION)
+            self._execute_interpreted(ir_program, MAX_RECURSION, output_file)
+
+    def save_tape(self, path='tape.json'):
+        import json
+
+        data = {'pointer': self.pointer, 'cells': {}}
+        for i, val in enumerate(self.cells._tape):
+            if val != 0:
+                data['cells'][str(i)] = val
+        for key, val in self.cells._sparse.items():
+            if val != 0:
+                data['cells'][str(key)] = val
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    def load_tape(self, path):
+        import json
+
+        with open(path) as f:
+            data = json.load(f)
+        self.pointer = data.get('pointer', 0)
+        self.cells = Cells()
+        for key_str, value in data.get('cells', {}).items():
+            self.cells[int(key_str)] = value
 
     def interpreter(self, MAX_RECURSION=10**5):
-        """Run the Interpreter.
-
-        Args:
-            MAX_RECURSION (Optional[float]): Max number of commands allowed
-            to execute in current line of commands.
-
-        """
         while True:
             cmd_line = input('>> ')
             while not self.is_balanced(cmd_line):
@@ -639,6 +647,13 @@ class BrainFuck:
                 cmd_line = cmd_line + tmp if tmp else 'skip'
             if cmd_line == 'help':
                 print(help_text)
+            elif cmd_line in ('quit', 'exit'):
+                break
+            elif cmd_line.startswith('save'):
+                parts = cmd_line.split(maxsplit=1)
+                path = parts[1] if len(parts) > 1 else 'tape.json'
+                self.save_tape(path)
+                print(f'Tape saved to {path}')
             elif not cmd_line:
                 break
             else:
@@ -736,6 +751,24 @@ def main(args=None):
         metavar='FILE',
         help='load brainfuck commands from a file',
     )
+    arg_parser.add_argument(
+        '--load',
+        type=str,
+        metavar='FILE',
+        help='load tape state from JSON file before execution',
+    )
+    arg_parser.add_argument(
+        '--output',
+        type=str,
+        metavar='FILE',
+        help='redirect output to file instead of stdout',
+    )
+    arg_parser.add_argument(
+        '--dump',
+        type=str,
+        metavar='FILE',
+        help='save tape state to JSON file after execution',
+    )
     arguments = arg_parser.parse_args(args)
 
     cmd = arguments.cmd
@@ -744,7 +777,22 @@ def main(args=None):
             cmd = f.read()
 
     bf = BrainFuck()
-    bf.execute(cmd, arguments.recursion)
+    if arguments.load:
+        bf.load_tape(arguments.load)
+
+    output_fh = None
+    if arguments.output:
+        output_fh = open(arguments.output, 'w')
+
+    try:
+        bf.execute(cmd, arguments.recursion, output_file=output_fh)
+    finally:
+        if output_fh:
+            output_fh.close()
+
+    if arguments.dump:
+        bf.save_tape(arguments.dump)
+
     if not arguments.command_line:
         bf.interpreter(arguments.recursion)
 

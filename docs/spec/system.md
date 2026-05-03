@@ -68,12 +68,12 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 | Module | Responsibility | Bounded Context |
 |--------|----------------|-----------------|
-| `BrainFuck` class | Parsing, compilation, segmented JIT orchestration, import resolution | Execution |
+| `BrainFuck` class | Parsing, compilation, segmented JIT orchestration, import resolution, tape persistence | Execution |
 | `Cells` class | Tape memory model (list + sparse dict) | Memory |
 | `execute_jit()` | Numba JIT-compiled execution of IR programs with checkpoint return | Execution |
 | `_execute_segmented_jit()` | Orchestration loop: JIT → flush → checkpoint → resume | Execution |
 | `convert_ir_to_numeric()` | Converts IR tuples to NumPy arrays for JIT | Compilation |
-| `main()` | CLI argument parsing and entry point | Delivery |
+| `main()` | CLI argument parsing, file I/O, and entry point | Delivery |
 
 ---
 
@@ -102,7 +102,9 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 - Python >= 3.13 required (for Numba compatibility)
 - Numba and NumPy are required runtime dependencies
 - All programs use segmented JIT path; interpreted path is fallback for JIT compilation failure only
+- Cell values wrap to 0-255 (8-bit unsigned) per standard Brainfuck specification
 - Tape pre-allocated to 65,536 cells (64K) for JIT execution; Cells uses list + sparse dict for REPL
+- Tape state persisted as sparse JSON: `{"pointer": int, "cells": {"index": value}}`
 - MAX_RECURSION (default 100,000) limits execution to prevent infinite loops
 
 ---
@@ -112,6 +114,7 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 - IR compilation with run-length encoding chosen over character-by-character interpretation for performance (ADR-20260502-ir-compilation)
 - Numba JIT chosen as acceleration backend for its Python integration and zero-copy NumPy support (ADR-20260502-jit-acceleration)
 - Segmented JIT with checkpoint/resume chosen over bifurcated paths to give all programs JIT acceleration (ADR-20260503-segmented-jit)
+- Tape persistence uses sparse JSON format for human-readability and minimal file size
 - Cells implemented as list + sparse dict rather than pure dict for O(1) positive-index access
 - Library files filtered to valid BF commands only during import (non-BF text treated as comments)
 
@@ -137,3 +140,6 @@ See `docs/features/` for accepted features.
 | 2026-05-02 | ADR-20260502-jit-acceleration | Added Numba JIT execution path | Performance |
 | 2026-05-02 | Optimisation pass | Replaced Cells(dict) with list + sparse dict | Performance |
 | 2026-05-03 | ADR-20260503-segmented-jit | Replaced bifurcated execution with segmented JIT | All programs now JIT-accelerated |
+| 2026-05-03 | v2.2.0 | Added tape persistence (save/load), REPL quit/save, CLI --load/--output/--dump | Usability |
+| 2026-05-03 | v2.2.0 | Fixed cell wrapping to 0-255 (8-bit unsigned) | Spec compliance |
+| 2026-05-03 | v2.2.0 | Fixed EOFError handling in input functions | Robustness |

@@ -8,10 +8,10 @@ def test_imports_lib_simple_import(capsys) -> None:
     Then the output shows 'importing: bflib/toint.bf' followed by a cell display
     """
     bf = BrainFuck()
-    bf.execute('{toint}*')
+    bf.execute("{toint}*")
     captured = capsys.readouterr()
-    assert 'importing: bflib/toint.bf' in captured.out
-    assert '|' in captured.out
+    assert "importing: bflib/toint.bf" in captured.out
+    assert "|" in captured.out
 
 
 def test_imports_lib_nested_import(capsys) -> None:
@@ -21,10 +21,10 @@ def test_imports_lib_nested_import(capsys) -> None:
     Then all nested imports are resolved before execution
     """
     bf = BrainFuck()
-    bf.execute('{p10}*{tochar}')
+    bf.execute("{p10}*{tochar}")
     captured = capsys.readouterr()
-    assert 'importing: bflib/p10.bf' in captured.out
-    assert 'importing: bflib/tochar.bf' in captured.out
+    assert "importing: bflib/p10.bf" in captured.out
+    assert "importing: bflib/tochar.bf" in captured.out
 
 
 def test_imports_lib_missing_import(capsys) -> None:
@@ -34,9 +34,9 @@ def test_imports_lib_missing_import(capsys) -> None:
     Then an exception is raised or error message printed with 'Could not import'
     """
     bf = BrainFuck()
-    bf.execute('{nonexistent}')
+    bf.execute("{nonexistent}")
     captured = capsys.readouterr()
-    assert 'Could not import' in captured.out
+    assert "Could not import" in captured.out
 
 
 def test_imports_lib_command_history(capsys) -> None:
@@ -46,9 +46,9 @@ def test_imports_lib_command_history(capsys) -> None:
     Then the output shows the expanded command history with library contents inlined
     """
     bf = BrainFuck()
-    bf.execute('+++++++++++++++++++++++++++++++++++++++++++++++++++.')
-    bf.execute('[-]')
-    bf.execute('{p10}*{tochar}')
-    bf.execute('&')
+    bf.execute("+++++++++++++++++++++++++++++++++++++++++++++++++++.")
+    bf.execute("[-]")
+    bf.execute("{p10}*{tochar}")
+    bf.execute("&")
     captured = capsys.readouterr()
-    assert '+++++++++++++++++++++++++++++++++++++++++++++++++++' in captured.out
+    assert "+++++++++++++++++++++++++++++++++++++++++++++++++++" in captured.out

@@ -45,6 +45,8 @@ The banner (1280×320) uses navy background (`#0B1026`) with a subtle code patte
   - `v0.1.0` — **Amnesia** (the interpreter forgets nothing, but the name nods to Brainfuck's memory tape)
   - `v0.2.0` — *(no codename assigned)*
   - `v2.0.0` — **Neuroplasticity** (the brain's ability to reorganize — the interpreter dynamically adapts between JIT and I/O operations)
+  - `v2.1.0` — *(no codename assigned)*
+  - `v2.2.0` — **Memory Consolidation** (the brain's process of stabilizing a memory trace — the interpreter now persists tape state)
 - **Examples:** Aphasia, Transient Global Amnesia, Frontal Lobe Syndrome, Absence Seizure, Hemispheric Neglect, Brain Injury
 
 ## Wording

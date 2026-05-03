@@ -37,6 +37,15 @@ brainfuck --command-line -f program.b
 # Run a program then enter interactive REPL
 brainfuck '+++++++++++++++++++++++++++++++++++++++++++++++++++.'
 
+# Redirect output to a file
+brainfuck --command-line --output result.txt '+++++++++[>++++++++<-]>+.'
+
+# Save tape state after execution
+brainfuck --command-line --dump tape.json '+++'
+
+# Load tape state, run program, and dump result
+brainfuck --command-line --load tape.json --output result.txt --dump out.json '.>+++.'
+
 # Enter interactive REPL
 brainfuck
 ```
@@ -51,6 +60,8 @@ bf.execute('+++++++++++++++++++++++++++++++++++++++++++++++++++.')  # prints: 3
 bf.execute('[-]')                    # clears cell 0
 bf.execute('{p10}*{tochar}')         # imports and prints: |10|
 bf.execute('&')                       # prints command history
+bf.save_tape('tape.json')            # save tape state to file
+bf.load_tape('tape.json')            # restore tape state from file
 bf.interpreter()                      # starts interactive REPL
 ```
 
@@ -77,6 +88,8 @@ bf.interpreter()                      # starts interactive REPL
 | `*` | Output all cells with pointer highlighted |
 | `&` | Output command history |
 | `help` | Show command reference (REPL only) |
+| `quit` / `exit` | Exit the REPL |
+| `save [FILE]` | Save tape state to JSON file (default: `tape.json`, REPL only) |
 
 ## Library Modules
 

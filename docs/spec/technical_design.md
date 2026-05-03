@@ -43,7 +43,7 @@ N/A — this document describes the overall system architecture.
 
 ```
 brainfuck.py
-  BrainFuck              # Main class: parse, compile, execute, import resolution
+  BrainFuck              # Main class: parse, compile, execute, import, persistence
   Cells                  # Tape memory: list + sparse dict
   execute_jit()          # @jit(nopython=True) execution loop with checkpoint return
   _execute_segmented_jit() # Orchestration: JIT → flush → checkpoint → resume
@@ -52,7 +52,7 @@ brainfuck.py
   _sync_cells_from_tape() # Copy tape state back to Cells for I/O
   convert_ir_to_numeric() # IR → NumPy array conversion
   convert_ir_to_numeric_jit() # @jit helper for array construction
-  main()                 # CLI entry point
+  main()                 # CLI entry point with --load/--output/--dump flags
 
 bflib/
   sum.bf, copy.bf, ...  # Reusable Brainfuck library modules
@@ -70,7 +70,7 @@ bflib/
 bf = BrainFuck()
 ```
 
-### `BrainFuck.execute(cmd_line, MAX_RECURSION=100000)`
+### `BrainFuck.execute(cmd_line, MAX_RECURSION=100000, output_file=None)`
 
 **Method.** Compiles and executes a Brainfuck program string.
 
@@ -78,16 +78,17 @@ bf = BrainFuck()
 |-----------|------|---------|-------------|
 | `cmd_line` | `str` | required | Brainfuck source code (may include `{LIB}` imports) |
 | `MAX_RECURSION` | `int` | 100000 | Maximum operations before halting |
+| `output_file` | `file` | None | Optional file handle for output redirection |
 
 **Raises:** `Exception("brackets not balanced!")` if brackets are mismatched.
 
-**Side effects:** Prints output to stdout. Modifies internal `cells`, `pointer`, and `_cmd_parts`.
+**Side effects:** Prints output to stdout (or `output_file`). Modifies internal `cells`, `pointer`, and `_cmd_parts`.
 
 **JIT path:** All programs execute via `execute_jit()` using segmented execution. When the JIT encounters an I/O operation (`,`, `*`, `&`), it returns a status code and Python handles the I/O before resuming. If JIT compilation fails, the interpreted path is used as fallback.
 
 ### `BrainFuck.interpreter(MAX_RECURSION=100000)`
 
-**Method.** Starts an interactive REPL. Prompts with `>> ` (and `.. ` for incomplete brackets). Enter empty line to exit. Type `help` for command reference.
+**Method.** Starts an interactive REPL. Prompts with `>> ` (and `.. ` for incomplete brackets). Type `quit` or `exit` to leave. Type `help` for command reference. Type `save [FILE]` to persist tape state.
 
 ### `BrainFuck.is_balanced(cmd_line) -> bool`
 
@@ -104,6 +105,14 @@ bf = BrainFuck()
 ### `BrainFuck.print_cmd_history()`
 
 **Method.** Prints the length and content of all commands executed so far.
+
+### `BrainFuck.save_tape(path="tape.json")`
+
+**Method.** Saves current tape state (pointer position + non-zero cells) to a JSON file.
+
+### `BrainFuck.load_tape(path)`
+
+**Method.** Loads tape state from a JSON file. Restores pointer and cells.
 
 ---
 
@@ -156,8 +165,9 @@ def _execute_segmented_jit(self, numeric_program, tape, tape_center, state, outp
 |-----|------|---------|-------------|
 | `MAX_RECURSION` | int | 100000 | Maximum operations per `execute()` call |
 | `TAPE_SIZE` | int | 65536 | Pre-allocated tape size for JIT path (64K) |
-| `OUTPUT_BUF_SIZE` | int | 65536 | Output buffer size for JIT checkpoint |
+| `OUTPUT_BUF_SIZE` | int | 1000000 | Output buffer size for JIT checkpoint |
 | `bflib/` | path | `<package_dir>/bflib/` | Directory to resolve `{LIB}` imports from |
+| `tape.json` | path | `tape.json` | Default path for REPL `save` command |
 
 ---
 
@@ -168,4 +178,7 @@ def _execute_segmented_jit(self, numeric_program, tape, tape_center, state, outp
 | 2026-05-02 | ADR-20260502-ir-compilation | Added IR compilation phase | Performance |
 | 2026-05-02 | ADR-20260502-jit-acceleration | Added JIT execution path | Performance |
 | 2026-05-02 | Optimisation | Replaced Cells(dict) with list + sparse dict | Performance |
+| 2026-05-03 | ADR-20260503-segmented-jit | Replaced bifurcated execution with segmented JIT | All programs JIT-accelerated |
+| 2026-05-03 | v2.2.0 | Added tape persistence, REPL quit/save, CLI --load/--output/--dump | Usability |
+| 2026-05-03 | v2.2.0 | Fixed cell wrapping to 0-255 and EOFError handling | Correctness |
 | 2026-05-03 | ADR-20260503-segmented-jit | Replaced bifurcated execution with segmented JIT | All programs JIT-accelerated |

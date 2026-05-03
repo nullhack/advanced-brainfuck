@@ -2,6 +2,24 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
+## [2.2.0] - 20260503 — Memory Consolidation
+
+### Added
+
+- `quit` and `exit` commands in REPL to exit the interpreter
+- `save [FILE]` command in REPL to save tape state to JSON (default: `tape.json`)
+- `--load FILE` CLI flag to restore tape state from a JSON file before execution
+- `--output FILE` CLI flag to redirect program output to a file instead of stdout
+- `--dump FILE` CLI flag to save tape state to a JSON file after execution
+- `save_tape(path)` and `load_tape(path)` methods on `BrainFuck` class for programmatic tape persistence
+- Tape state JSON format: `{"pointer": int, "cells": {"index": value, ...}}` (sparse, non-zero cells only)
+
+### Fixed
+
+- Cell values now wrap to 0-255 (8-bit unsigned) in both JIT and interpreted paths — standard Brainfuck requires `255+1=0` and `0-1=255`
+- `EOFError` in `_read_input_direct()` and `_read_value()` now returns -1 instead of crashing when stdin is exhausted
+- `_read_value()` and `_read_input_direct()` now take only the first character of string input (`ord(ui[0])`)
+
 ## [2.1.3] - 20260503
 
 ### Fixed
