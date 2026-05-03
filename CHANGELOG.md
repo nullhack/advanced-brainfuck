@@ -2,6 +2,12 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
+## [2.1.3] - 20260503
+
+### Fixed
+
+- CLI entry point now correctly parses arguments (`main()` was using default `args=[]` instead of `sys.argv`)
+
 ## [2.1.2] - 20260503
 
 ### Added
