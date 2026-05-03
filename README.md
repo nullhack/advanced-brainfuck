@@ -1,157 +1,149 @@
-[![master branch build status](https://api.travis-ci.com/nullhack/advanced-brainfuck.svg?branch=master)](https://travis-ci.com/nullhack/advanced-brainfuck)
-
 # advanced-brainfuck
 
-This project implements an Interpreter for [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) language, some additional features are available, e.g. Import external libs, Cells print, Command history.
+A high-performance Brainfuck language interpreter for Python with JIT acceleration, library imports, and an interactive REPL.
 
-----
+---
 
-## Quick links
-- [Requirements](#requirements)
-- [Project Setup](#project-setup)
-- [Usage](#usage)
-  - [Positional arguments](#positional-arguments)
-  - [Optionalonal arguments](#optional-arguments)
-- [BrainFuck Commands](#brainfuck-commands)
-  - [Additional commands](#additional-commands)
-- [Project Structure](#project-structure)
-- [License](#license)
+## Features
 
-[↑](#advanced-brainfuck)
+- **JIT-accelerated execution** — Compiles Brainfuck programs to an intermediate representation (IR) with run-length encoding, then executes via Numba's `@jit(nopython=True)` for 3-5x speedup on pure-computation programs
+- **Interpreted fallback** — Programs with input (`,`), cell display (`*`), or history (`&`) commands fall back to an interpreted IR path with full compatibility
+- **Library system** — Import external `.bf` files with `{libname}` syntax; recursive imports supported
+- **Interactive REPL** — Run `brainfuck` with no arguments for an interactive shell
+- **Python API** — `from brainfuck import BrainFuck` for programmatic use
 
-----
+## Quick Start
+
+### Installation
+
+```bash
+pip install advanced-brainfuck
+```
+
+### Command Line
+
+```bash
+# Run a program and exit
+brainfuck -c '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.'
+
+# Run a program then enter interactive REPL
+brainfuck '+++++++++++++++++++++++++++++++++++++++++++++++++++.'
+
+# Enter interactive REPL
+brainfuck
+```
+
+### Python API
+
+```python
+from brainfuck import BrainFuck
+
+bf = BrainFuck()
+bf.execute('+++++++++++++++++++++++++++++++++++++++++++++++++++.')  # prints: 3
+bf.execute('[-]')                    # clears cell 0
+bf.execute('{p10}*{tochar}')         # imports and prints: |10|
+bf.execute('&')                       # prints command history
+bf.interpreter()                      # starts interactive REPL
+```
+
+## Brainfuck Commands
+
+### Standard Commands
+
+| Command | Description |
+|---------|-------------|
+| `>` | Increment the data pointer |
+| `<` | Decrement the data pointer |
+| `+` | Increment the value at the data pointer |
+| `-` | Decrement the value at the data pointer |
+| `.` | Output the value at the data pointer |
+| `,` | Accept one integer of input |
+| `[` | Jump forward past matching `]` if value is zero |
+| `]` | Jump back to matching `[` if value is non-zero |
+
+### Additional Commands
+
+| Command | Description |
+|---------|-------------|
+| `{LIB}` | Import external Brainfuck code from `bflib/LIB.bf` |
+| `*` | Output all cells with pointer highlighted |
+| `&` | Output command history |
+| `help` | Show command reference (REPL only) |
+
+## Library Modules
+
+The `bflib/` directory contains reusable Brainfuck modules:
+
+| Module | Description |
+|--------|-------------|
+| `sum` | Sum current cell and next cell |
+| `sub` | Subtract next cell from current cell |
+| `mul` | Multiply current cell by next cell |
+| `mul2` | Multiply current cell by two |
+| `copy` | Copy current cell into next cell |
+| `p10`, `p50`, `p100` | Add 10, 50, 100 to current cell |
+| `m10`, `m50`, `m100` | Subtract 10, 50, 100 from current cell |
+| `toint` | Convert ASCII digit character to integer |
+| `tochar` | Convert integer (0-9) to ASCII character |
+| `lower` | Convert uppercase ASCII to lowercase |
+| `upper` | Convert lowercase ASCII to uppercase |
+
+## Architecture
+
+```
+Source Code → Import Resolution → IR Compilation → Execution
+                                                       ↓
+                                              ┌──── JIT Path ────┐
+                                              │ (no , * & cmds)  │
+                                              │ execute_jit()     │
+                                              │ via Numba         │
+                                              └───────────────────┘
+                                              ┌── Interpreted ────┐
+                                              │ (has , * & cmds)  │
+                                              │ Python IR loop    │
+                                              └───────────────────┘
+```
+
+### IR Compilation
+
+Source code is compiled to an intermediate representation with:
+- **Run-length encoding** — `+++++` becomes `('add', 5)` in a single operation
+- **Pre-resolved jumps** — `[` and `]` targets are computed at compile time
+- **Numeric encoding** — IR tuples converted to NumPy int32 arrays for JIT
+
+### Tape Memory
+
+Cells use a hybrid storage model:
+- Pre-allocated list of 30,000 integers for indices 0-29,999 (O(1) access)
+- Sparse `defaultdict` for negative indices (rarely used but supported)
 
 ## Requirements
 
-* [python](https://www.python.org/download/releases/3.0/) >= 2.7
-
-[↑](#quick-links)
-
-----
-
-## Project Setup
-
-* **Clone** the project
-* Move into the **project dir**
-* *(Optional)* Run the **tests**
-* **Run** brainfuck commands
-
-**Step 1**: Clone the project:
-
-    git clone https://github.com/nullhack/advanced-brainfuck.git
-
-**Step 2**: Move into the project dir:
-
-    cd advanced-brainfuck
-
-**Step 3**: *(Optional)* Run the tests:
-
-    python -m doctest -v ./how-to-use.md
-    
-**Step 4**: Run brainfuck COMMANDS:
-
-    python brainfuck.py -c COMMANDS
-    
-or start the interpreter
-
-    python brainfuck.py
-
-[↑](#quick-links)
-
-----
-
-## Usage: 
-
-    brainfuck.py [-h] [-r MAX_RECURSION] [-c] [cmd]
-
-### Positional arguments:
-
-    cmd         BrainFuck commands
-
-### Optional arguments:
-
-    -h, --help            show this help message and exit
-    -r MAX_RECURSION, --recursion MAX_RECURSION
-                          set MAX_RECURSION value
-    -c, --command-line    do not initialize shell, running commands from
-                          arguments only
-
-[↑](#quick-links)
-
-----
-
-## BrainFuck Commands
-
-    >         increment the data pointer.
-    <         decrement the data pointer.
-    +         increment the value at the data pointer.
-    -         decrement the value at the data pointer.
-    .         output the value at the data pointer.
-    ,         accept one integer of inputer.
-    [         jump if value is false.
-    ]         continue if value is true.
-
-### Additional commands
-
-    {LIB}         import external brainfuck code and run it into current instance.
-    *             output all the cells.
-    &             output command history.
-    help          show this help message.
-
-[↑](#quick-links)
-
-----
+- Python >= 3.13
+- Numba >= 0.58.0
+- NumPy >= 1.24.0
 
 ## Project Structure
 
-    advanced-brainfuck
-    ├── bflib
-    │   ├── copy.bf
-    │   ├── lower.bf
-    │   ├── m100.bf
-    │   ├── m10.bf
-    │   ├── m50.bf
-    │   ├── mul2.bf
-    │   ├── mul.bf
-    │   ├── p100.bf
-    │   ├── p10.bf
-    │   ├── p50.bf
-    │   ├── sub.bf
-    │   ├── sum.bf
-    │   ├── tochar.bf
-    │   ├── toint.bf
-    │   └── upper.bf
-    ├── brainfuck.py
-    ├── LICENSE
-    ├── how-to-use.md
-    └── README.md
-    
-
-[↑](#quick-links)
-
-----
+```
+advanced-brainfuck/
+├── brainfuck.py           # Core interpreter, compiler, JIT, CLI
+├── bflib/                 # Reusable Brainfuck library modules
+│   ├── sum.bf
+│   ├── copy.bf
+│   ├── mul.bf
+│   ├── toint.bf
+│   └── ...
+├── docs/
+│   ├── spec/              # Product & technical specifications
+│   ├── adr/               # Architecture decision records
+│   └── features/           # Feature specifications
+├── tests/
+│   └── features/           # Test files
+├── pyproject.toml          # Package configuration
+└── README.md
+```
 
 ## License
 
-This project is released under GPLv3 license.
-
-Advanced Brainfuck Copyright (C) 2016  Eric Lopes
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-For more info, please read the complete [license](LICENSE) file.
-
-[↑](#quick-links)
-
-----
+GPLv3 — See [LICENSE](LICENSE) for details.
