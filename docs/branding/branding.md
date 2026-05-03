@@ -20,29 +20,32 @@ Agents read this file before generating release names, C4 diagrams, README banne
 
 The palette is drawn from terminal aesthetics — dark backgrounds, bright accents, monospace precision. Every colour choice serves legibility first; decoration is secondary.
 
-- **Background/parchment:** `#1E1E2E` → `#11111B` — Deep terminal dark; reduces eye strain during long sessions
-- **Primary text:** `#CDD6F4` → `#BAC2DE` — High-contrast light text on dark backgrounds
-- **Accent/gold:** `#F9E2AF` → `#F5C2E7` — Highlights for pointers and active cells; decorative only
-- **Secondary/blue:** `#89B4FA` → `#74C7EC` — Links, commands, and interactive elements
-- **Stone/marble:** `#6C7086` → `#585B70` — Muted text, comments, and secondary information
+- **Background:** `#0B1026` — Deep navy terminal dark; reduces eye strain during long sessions
+- **Primary text:** `#F0F0F0` — High-contrast light text on dark backgrounds
+- **Accent gold:** `#FFB800` — Highlights for pointers and active cells; decorative only
+- **Secondary blue:** `#6A7AA0` — Links, commands, and interactive elements
 - **Logo:** `docs/assets/logo.svg`
 - **Banner:** `docs/assets/banner.svg`
 
-> `#CDD6F4` on `#1E1E2E` achieves 12.4:1 contrast (WCAG AAA). `#F9E2AF` is decorative; it never carries meaning that must be read.
+> `#F0F0F0` on `#0B1026` achieves high contrast (WCAG AAA). `#FFB800` is decorative; it never carries meaning that must be read.
 
 ### Logo
 
-The logo mark depicts a Brainfuck tape: eight rectangular cells arranged horizontally, with one cell highlighted by the data pointer. The highlighted cell uses the accent colour (`#F9E2AF`); other cells use primary text (`#CDD6F4`). The pointer arrow below uses secondary blue (`#89B4FA`). All strokes are 2px. Dark-mode variant inverts: dark cells on light background.
+The logo depicts Brainfuck command syntax: heavy brackets `[ ]` enclosing stylized directional arrows `< >` and a central dot `.` representing output. The brackets use secondary blue (`#6A7AA0`), arrows use primary white (`#F0F0F0`), and the dot uses accent gold (`#FFB800`). All elements maintain geometric precision with rounded corners. Dark-mode variant uses the same colors on navy background.
 
 ### Banner
 
-The banner layout uses the terminal background (`#1E1E2E`) across the full 1200×630 canvas. The logo sits left-centred at 64px from the left edge, vertically centred. Project name "advanced-brainfuck" in `#CDD6F4` monospace at 48px sits to the right of the logo, with the tagline below in `#6C7086` at 20px. A thin `#89B4FA` horizontal rule separates the tagline from the name.
+The banner (1280×320) uses navy background (`#0B1026`) with a subtle code pattern. The logo sits left at 120px from edge, vertically centered and scaled to 0.35x. Project name "advanced-brainfuck" in white at 48px sits center-right, with tagline "JIT-Accelerated Brainfuck Interpreter" below in blue-gray (`#6A7AA0`) at 18px. Key command highlight `[ < . > ]` appears in gold within a rounded blue-gray background.
 
 ## Release Naming
 
-- **Convention:** `adjective-stone`
-- **Theme:** Stones and minerals — enduring, foundational, precisely formed
-- **Excluded words:** diamond, gold, silver (too precious/cliché)
+- **Pattern:** Release codenames reference phenomena that alter how the brain operates — neurological conditions, cognitive effects, brain injuries, or mental states. Multi-word phrases are welcome. The name should metaphorically echo what the release changes about the interpreter.
+- **Format:** `v<semver>` tag with codename in release notes (e.g., `v0.3.0 — Syncope`).
+- **Existing releases:**
+  - `v0.1.0` — **Amnesia** (the interpreter forgets nothing, but the name nods to Brainfuck's memory tape)
+  - `v0.2.0` — *(no codename assigned)*
+  - `v2.0.0` — **Neuroplasticity** (the brain's ability to reorganize — the interpreter dynamically adapts between JIT and I/O operations)
+- **Examples:** Aphasia, Transient Global Amnesia, Frontal Lobe Syndrome, Absence Seizure, Hemispheric Neglect, Brain Injury
 
 ## Wording
 

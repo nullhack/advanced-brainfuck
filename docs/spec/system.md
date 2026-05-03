@@ -6,7 +6,7 @@
 
 ## Summary
 
-advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acceleration. It compiles Brainfuck source code to an intermediate representation (IR) with run-length encoding and pre-resolved jumps, then executes it either through a Numba JIT-compiled path (for pure computation) or a Python interpreted path (for I/O operations). Users interact via a Python API (`BrainFuck` class) or a CLI (`brainfuck` command).
+advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acceleration. It compiles Brainfuck source code to an intermediate representation (IR) with run-length encoding and pre-resolved jumps, then executes it through a segmented JIT path that pauses at I/O checkpoints (input, cell display, history) for Python to handle I/O before resuming native execution. If JIT compilation fails, it falls back to an interpreted IR path. Users interact via a Python API (`BrainFuck` class) or a CLI (`brainfuck` command).
 
 ---
 
@@ -59,7 +59,7 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 | Interaction | Behaviour |
 |-------------|-----------|
-| brainfuck.py → Numba JIT | Converts IR to NumPy arrays and calls `execute_jit()` for fast execution |
+| brainfuck.py → Numba JIT | Converts IR to NumPy arrays and calls `execute_jit()` via segmented execution with I/O checkpoints |
 | brainfuck.py → bflib/ | Reads `.bf` files and inlines their contents during import resolution |
 
 ---
@@ -68,9 +68,10 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 | Module | Responsibility | Bounded Context |
 |--------|----------------|-----------------|
-| `BrainFuck` class | Parsing, compilation, execution orchestration, import resolution | Execution |
+| `BrainFuck` class | Parsing, compilation, segmented JIT orchestration, import resolution | Execution |
 | `Cells` class | Tape memory model (list + sparse dict) | Memory |
-| `execute_jit()` | Numba JIT-compiled execution of IR programs | Execution |
+| `execute_jit()` | Numba JIT-compiled execution of IR programs with checkpoint return | Execution |
+| `_execute_segmented_jit()` | Orchestration loop: JIT → flush → checkpoint → resume | Execution |
 | `convert_ir_to_numeric()` | Converts IR tuples to NumPy arrays for JIT | Compilation |
 | `main()` | CLI argument parsing and entry point | Delivery |
 
@@ -82,7 +83,7 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 | Bounded Context | Business Capability | Why It's Separate |
 |-----------------|---------------------|-------------------|
-| Execution | Run Brainfuck programs correctly and fast | Distinct because compilation, JIT dispatch, and interpreted fallback have different performance profiles |
+| Execution | Run Brainfuck programs correctly and fast | Distinct because compilation, segmented JIT dispatch, and interpreted fallback have different performance profiles |
 | Memory | Manage the Brainfuck tape efficiently | Distinct because the tape data structure is optimised independently (list + sparse dict) |
 | Library | Resolve and inline external Brainfuck modules | Distinct because import resolution is a compile-time concern separate from runtime execution |
 | Delivery | Expose the interpreter via CLI and Python API | Distinct because delivery format does not affect execution semantics |
@@ -100,8 +101,8 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 - Python >= 3.13 required (for Numba compatibility)
 - Numba and NumPy are required runtime dependencies
-- JIT path only available for programs without `,`, `*`, or `&` commands
-- Tape pre-allocated to 30,000 cells; sparse dict used for negative indices
+- All programs use segmented JIT path; interpreted path is fallback for JIT compilation failure only
+- Tape pre-allocated to 65,536 cells (64K) for JIT execution; Cells uses list + sparse dict for REPL
 - MAX_RECURSION (default 100,000) limits execution to prevent infinite loops
 
 ---
@@ -110,6 +111,7 @@ advanced-brainfuck is a Python-based Brainfuck language interpreter with JIT acc
 
 - IR compilation with run-length encoding chosen over character-by-character interpretation for performance (ADR-20260502-ir-compilation)
 - Numba JIT chosen as acceleration backend for its Python integration and zero-copy NumPy support (ADR-20260502-jit-acceleration)
+- Segmented JIT with checkpoint/resume chosen over bifurcated paths to give all programs JIT acceleration (ADR-20260503-segmented-jit)
 - Cells implemented as list + sparse dict rather than pure dict for O(1) positive-index access
 - Library files filtered to valid BF commands only during import (non-BF text treated as comments)
 
@@ -134,3 +136,4 @@ See `docs/features/` for accepted features.
 | 2026-05-02 | ADR-20260502-ir-compilation | Added IR compilation with RLE | Performance |
 | 2026-05-02 | ADR-20260502-jit-acceleration | Added Numba JIT execution path | Performance |
 | 2026-05-02 | Optimisation pass | Replaced Cells(dict) with list + sparse dict | Performance |
+| 2026-05-03 | ADR-20260503-segmented-jit | Replaced bifurcated execution with segmented JIT | All programs now JIT-accelerated |

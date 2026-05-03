@@ -1,9 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "advanced-brainfuck"
-version = "0.2.0"
+version = "2.0.0"
 description = "High-performance Brainfuck interpreter with JIT acceleration, library imports, and interactive REPL"
 readme = "README.md"
 requires-python = ">=3.13"
+license = { file = "LICENSE" }
+authors = [
+    { name = "eol", email = "nullhack@users.noreply.github.com" }
+]
 dependencies = [
     "numba>=0.58.0",
     "numpy>=1.24.0",
@@ -12,8 +20,41 @@ dependencies = [
 [project.scripts]
 brainfuck = "brainfuck:main"
 
-[dependency-groups]
+[project.urls]
+Repository = "https://github.com/nullhack/advanced-brainfuck"
+Documentation = "https://github.com/nullhack/advanced-brainfuck#readme"
+"Bug Tracker" = "https://github.com/nullhack/advanced-brainfuck/issues"
+
+[project.optional-dependencies]
 dev = [
     "agents-smith>=1.0.0",
     "pytest>=9.0.3",
+    "pytest-cov>=6.1.1",
+    "ruff>=0.11.5",
+    "taskipy>=1.14.1",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+preview = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "--tb=short -q"
+
+[tool.taskipy.tasks]
+lint = "ruff check . && ruff format --check ."
+ruff-check = "ruff check ."
+ruff-format-check = "ruff format --check ."
+test = "python -m pytest tests/ --tb=short -q"
+test-fast = "python -m pytest tests/ --tb=short -q -m 'not slow'"
+test-coverage = "python -m pytest tests/ --cov=brainfuck --cov-report=html --cov-report=term-missing"
+test-build = "python -m pytest tests/ --cov=brainfuck --cov-report=html --cov-report=term-missing && echo 'All tests passed with coverage'"
+run = "python -m brainfuck"
+build = "python -m build"
+release-check = "python -m pytest tests/ --tb=short -q && ruff check . && ruff format --check ."

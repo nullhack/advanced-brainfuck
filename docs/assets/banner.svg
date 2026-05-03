@@ -1,17 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <rect width="1200" height="630" fill="#1E1E2E"/>
-  <g transform="translate(64, 220)">
-    <rect x="0" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="60" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="120" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="180" y="0" width="48" height="56" fill="#F9E2AF" rx="4"/>
-    <rect x="240" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="300" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="360" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <rect x="420" y="0" width="48" height="56" fill="#CDD6F4" rx="4"/>
-    <polygon points="228,66 228,80 208,80 208,90 248,90 248,80 228,80" fill="#89B4FA"/>
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #0B1026; }
+      .accent { fill: #6A7AA0; }
+      .primary { fill: #F0F0F0; }
+      .secondary { fill: #FFB800; }
+      .code { font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-weight: 600; }
+      .title { font-family: 'Inter', 'Helvetica', sans-serif; font-weight: 700; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect class="bg" width="1280" height="320"/>
+  
+  <!-- Code Flow Background Pattern -->
+  <g opacity="0.1" class="accent">
+    <text x="50" y="80" font-size="48" class="code">++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;</text>
+    <text x="50" y="140" font-size="48" class="code">.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.</text>
+    <text x="50" y="200" font-size="48" class="code">&gt;&gt;+.&gt;++.+++[&gt;+++&lt;-]&gt;++.----.&gt;++++++++++.</text>
+    <text x="50" y="260" font-size="48" class="code">[&gt;+++++[&gt;+++++&lt;-]&lt;-]&gt;&gt;+++.----.&lt;&lt;++.&gt;&gt;---.</text>
   </g>
-  <text x="560" y="280" font-family="monospace" font-size="48" font-weight="bold" fill="#CDD6F4">advanced-brainfuck</text>
-  <line x1="560" y1="296" x2="900" y2="296" stroke="#89B4FA" stroke-width="2"/>
-  <text x="560" y="328" font-family="monospace" font-size="20" fill="#6C7086">High-performance Brainfuck interpreter with JIT acceleration</text>
+  
+  <!-- Logo on Left (proper proportions from logo.svg) -->
+  <g transform="translate(120, 160) scale(0.35)">
+    <!-- Left bracket (exact proportions from logo.svg) -->
+    <rect x="-181" y="-181" width="18" height="362" rx="6" fill="#6A7AA0"/>
+    <rect x="-181" y="-181" width="90" height="18" rx="6" fill="#6A7AA0"/>
+    <rect x="-181" y="163" width="90" height="18" rx="6" fill="#6A7AA0"/>
+    
+    <!-- Right bracket (exact proportions from logo.svg) -->
+    <rect x="163" y="-181" width="18" height="362" rx="6" fill="#6A7AA0"/>
+    <rect x="91" y="-181" width="90" height="18" rx="6" fill="#6A7AA0"/>
+    <rect x="91" y="163" width="90" height="18" rx="6" fill="#6A7AA0"/>
+    
+    <!-- Symbols (exact proportions from logo.svg) -->
+    <polygon points="-126,0 -61,-61 -61,-31 -106,0 -61,31 -61,61" fill="#F0F0F0"/>
+    <circle cx="0" cy="0" r="45" fill="#FFB800"/>
+    <polygon points="126,0 61,-61 61,-31 106,0 61,31 61,61" fill="#F0F0F0"/>
+  </g>
+
+  <!-- Main Content -->
+  <g transform="translate(640, 160)">
+    <!-- Title -->
+    <text x="0" y="-20" text-anchor="middle" font-size="48" class="title primary">advanced-brainfuck</text>
+    
+    <!-- Tagline -->
+    <text x="0" y="20" text-anchor="middle" font-size="18" class="accent">JIT-Accelerated Brainfuck Interpreter</text>
+    
+    <!-- Key Commands Highlight -->
+    <g transform="translate(0, 50)">
+      <rect x="-120" y="-12" width="240" height="24" rx="12" class="accent" opacity="0.2"/>
+      <text x="0" y="4" text-anchor="middle" font-size="20" class="code secondary">[ &lt; . &gt; ]</text>
+    </g>
+  </g>
 </svg>

@@ -8,7 +8,7 @@ Accepted
 
 Even with IR compilation and run-length encoding, the execution loop still runs in Python — each IR operation involves a Python `if/elif` chain, attribute access, and method call. For programs with thousands of operations, this Python overhead dominates. Numba's `@jit(nopython=True)` compiles Python functions to native machine code, eliminating interpreter overhead entirely for tight numeric loops.
 
-However, not all Brainfuck operations can run in Numba's `nopython` mode: input (`,`), cell display (`*`), and command history (`&`) require Python I/O and object access. This creates a bifurcated execution path.
+However, not all Brainfuck operations can run in Numba's `nopython` mode: input (`,`), cell display (`*`), and command history (`&`) require Python I/O and object access. Initially this created a bifurcated execution path (programs with I/O fell back entirely to interpreted execution). This was later replaced by segmented JIT execution (ADR-20260503-segmented-jit) which pauses at I/O checkpoints and resumes JIT after Python handles the I/O.
 
 ## Interview
 
@@ -20,7 +20,7 @@ However, not all Brainfuck operations can run in Numba's `nopython` mode: input 
 
 ## Decision
 
-Implement a Numba JIT-compiled execution path (`execute_jit()`) that handles programs containing only `+`, `-`, `>`, `<`, `. `[`, and `]` commands. Programs with `,`, `*`, or `&` fall back to the interpreted IR execution path.
+Implement a Numba JIT-compiled execution path (`execute_jit()`) that handles Brainfuck programs. Originally, only programs without `,`, `*`, or `&` used the JIT path; others fell back to interpreted execution. This was superseded by segmented JIT execution (ADR-20260503-segmented-jit) which gives all programs JIT acceleration with checkpoint/resume at I/O boundaries.
 
 ## Reason
 
@@ -35,10 +35,9 @@ Numba provides 3-5x speedup over interpreted Python for tight numeric loops. The
 
 ## Consequences
 
-- (+) 3-5x speedup for pure-computation Brainfuck programs
+- (+) 3-5x speedup for Brainfuck programs (all programs now benefit via segmented execution)
 - (+) Zero behavioral changes — JIT and interpreted paths produce identical results
 - (+) Numba is well-maintained and widely used in scientific Python
-- (-) Programs with `,`, `*`, or `&` commands bypass JIT (no speedup)
 - (-) First JIT call has compilation overhead (~0.5s); subsequent calls are fast
 - (-) Numba and NumPy become required runtime dependencies (large install size)
 - (-) Python version constrained to Numba's supported range (currently >=3.9, effectively >=3.13 for our stack)
