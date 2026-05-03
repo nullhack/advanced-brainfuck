@@ -27,7 +27,10 @@ pip install advanced-brainfuck
 
 ```bash
 # Run a program and exit
-brainfuck -c '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.'
+brainfuck --command-line '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.'
+
+# Run a program from file (recommended for large programs)
+brainfuck --command-line -f program.b
 
 # Run a program then enter interactive REPL
 brainfuck '+++++++++++++++++++++++++++++++++++++++++++++++++++.'
@@ -75,7 +78,7 @@ bf.interpreter()                      # starts interactive REPL
 
 ## Library Modules
 
-The `bflib/` directory contains reusable Brainfuck modules:
+The `bflib/` directory contains 31 reusable Brainfuck modules:
 
 | Module | Description |
 |--------|-------------|
@@ -83,11 +86,24 @@ The `bflib/` directory contains reusable Brainfuck modules:
 | `sub` | Subtract next cell from current cell |
 | `mul` | Multiply current cell by next cell |
 | `mul2` | Multiply current cell by two |
+| `div` | Divide current cell by next cell |
+| `mod` | Modulo of current cell divided by next cell |
 | `copy` | Copy current cell into next cell |
-| `p10`, `p50`, `p100` | Add 10, 50, 100 to current cell |
+| `move` | Move current cell to next cell (copy + clear) |
+| `swap` | Swap current cell and next cell |
+| `zero` | Clear current cell (set to zero) |
+| `not` | Logical NOT of current cell |
+| `and` | Logical AND of current and next cell |
+| `or` | Logical OR of current and next cell |
+| `eq` | Test if current cell equals next cell |
+| `if` | If current cell is non-zero, set next cell to 1 |
+| `sqrt` | Integer square root of current cell |
+| `p5` | Add 5 to current cell |
+| `p10`, `p32`, `p48`, `p50`, `p65`, `p100` | Add 5, 10, 32 (space), 48 (digit '0'), 50, 65 ('A'), 100 to current cell |
 | `m10`, `m50`, `m100` | Subtract 10, 50, 100 from current cell |
 | `toint` | Convert ASCII digit character to integer |
 | `tochar` | Convert integer (0-9) to ASCII character |
+| `newline` | Output a newline character (ASCII 10) |
 | `lower` | Convert uppercase ASCII to lowercase |
 | `upper` | Convert lowercase ASCII to uppercase |
 
@@ -136,13 +152,17 @@ Cells use a pre-allocated NumPy tape of 65,536 cells (64K) for JIT execution, wi
 
 ```
 advanced-brainfuck/
-├── brainfuck.py           # Core interpreter, compiler, JIT, CLI
-├── bflib/                 # Reusable Brainfuck library modules
-│   ├── sum.bf
-│   ├── copy.bf
-│   ├── mul.bf
-│   ├── toint.bf
-│   └── ...
+├── brainfuck/               # Python package
+│   ├── __init__.py          # Public API re-exports
+│   ├── __main__.py          # python -m brainfuck entry point
+│   ├── core.py              # Core interpreter, compiler, JIT, CLI
+│   └── bflib/               # Reusable Brainfuck library modules
+│       ├── sum.bf
+│       ├── copy.bf
+│       ├── mul.bf
+│       ├── div.bf
+│       ├── toint.bf
+│       └── ...              # 31 modules total
 ├── docs/
 │   ├── spec/              # Product & technical specifications
 │   ├── adr/               # Architecture decision records

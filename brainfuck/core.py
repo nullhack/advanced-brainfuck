@@ -21,12 +21,12 @@
 
 """
 
+import argparse
 import os
 import re
 import sys
-import argparse
-import itertools
 from collections import defaultdict
+
 import numpy as np
 from numba import jit
 
@@ -49,7 +49,7 @@ STATUS_OUTPUT_OVERFLOW = 4
 
 OUTPUT_BUF_SIZE = 1_000_000
 
-help_text =  """
+help_text = """
 BrainFuck Commands
 
     >         increment the data pointer.
@@ -67,6 +67,7 @@ Additional Commands
     *             output all the cells.
     &             output command history.
     help          show this help message."""
+
 
 @jit(nopython=True)
 def execute_jit(program, tape, state, output_buf, max_iterations):
@@ -144,6 +145,7 @@ def execute_jit(program, tape, state, output_buf, max_iterations):
     state[2] = out_idx
     return (STATUS_COMPLETE, iterations)
 
+
 @jit(nopython=True)
 def convert_ir_to_numeric_jit(op_codes, args):
     """Convert parallel arrays to numeric format for JIT compilation."""
@@ -154,6 +156,7 @@ def convert_ir_to_numeric_jit(op_codes, args):
         program[i, 1] = args[i]
 
     return program
+
 
 def convert_ir_to_numeric(ir_list):
     """Convert IR tuples to numeric format for JIT compilation."""
@@ -182,6 +185,7 @@ def convert_ir_to_numeric(ir_list):
         args[i] = arg
 
     return convert_ir_to_numeric_jit(op_codes, args)
+
 
 class BrainFuck:
     """BrainFuck language specification.
@@ -216,11 +220,11 @@ class BrainFuck:
             Else, the value is printed as integer.
         """
         value = self.cells[self.pointer]
-        if not value: 
+        if not value:
             print()
-        elif value > 0 and value < 256: 
+        elif value > 0 and value < 256:
             print(chr(value), end="")
-        else: 
+        else:
             print(value, end="")
 
     def _read_value(self):
@@ -228,11 +232,11 @@ class BrainFuck:
 
         Note:
             Executes until a valid input is read or a blank line inserted.
-            
+
         """
         while True:
             ui = input('<< ')
-            if not ui: 
+            if not ui:
                 break
             try:
                 self.cells[self.pointer] = int(ui)
@@ -285,11 +289,11 @@ class BrainFuck:
             True if cmd_line is balanced (False if not).
 
         """
-        brackets = {'[':']','{':'}'}
+        brackets = {'[': ']', '{': '}'}
         stack = []
         for cmd in cmd_line:
             d = brackets.get(cmd, None)
-            if d: 
+            if d:
                 stack.append(d)
             elif cmd in brackets.values():
                 if not stack or cmd != stack.pop():
@@ -312,37 +316,36 @@ class BrainFuck:
         """
         if visited is None:
             visited = set()
-            
-        BASE_LIB = 'bflib'
-        BASE_DIR = os.path.join(os.path.dirname(__file__))
+
+        BASE_DIR = os.path.join(os.path.dirname(__file__), 'bflib')
         EXT = ['.bf', '']
-        
+
         import_list = re.findall(r'\{([a-zA-Z0-9_\.\-\/]+)\}', cmd_line)
-        path_ext = list(itertools.product([BASE_LIB, BASE_DIR], EXT))
-        
+        path_ext = [(BASE_DIR, ext) for ext in EXT]
+
         for lib in import_list:
             if lib in visited:
                 continue
             visited.add(lib)
-            
+
             lib_path = ''
             for base, ext in path_ext:
                 vpath = os.path.join(base, '{}{}'.format(lib, ext))
                 if os.path.isfile(vpath):
                     lib_path = vpath
                     break
-                    
+
             if not lib_path:
                 raise Exception('Could not import: {}'.format(lib))
-                
+
             with open(lib_path) as flib:
-                print('importing:', lib_path)
+                print('importing: bflib/{}{}'.format(lib, ext if ext else ''))
                 lib_content = ''.join(flib.readlines())
                 valid_cmds = set('><+-.,[]')
                 lib_content = ''.join(c for c in lib_content if c in valid_cmds)
                 lib_content = BrainFuck._resolve_imports(lib_content, visited)
                 cmd_line = cmd_line.replace('{{{}}}'.format(lib), lib_content)
-                
+
         return cmd_line
 
     @staticmethod
@@ -361,7 +364,7 @@ class BrainFuck:
         """
         resolved = BrainFuck._resolve_imports(cmds)
         import_list = re.findall(r'\{([a-zA-Z0-9_\.\-\/]+)\}', cmds)
-        
+
         import_dict = {}
         for lib in import_list:
             import_dict[lib] = resolved
@@ -369,21 +372,21 @@ class BrainFuck:
 
     def _compile_to_ir(self, cmd_line):
         """Compile BrainFuck commands to intermediate representation.
-        
+
         Args:
             cmd_line: String of BrainFuck commands (imports should already be resolved).
-            
+
         Returns:
             List of IR operations: [('add', count), ('move', offset), ('jump_zero', target), ...]
         """
         valid_cmds = set('><+-.,[]&*')
         filtered_cmds = [c for c in cmd_line if c in valid_cmds]
-        
+
         ir = []
         i = 0
         while i < len(filtered_cmds):
             cmd = filtered_cmds[i]
-            
+
             if cmd == '+':
                 count = 1
                 while i + count < len(filtered_cmds) and filtered_cmds[i + count] == '+':
@@ -428,7 +431,7 @@ class BrainFuck:
                 i += 1
             else:
                 i += 1
-        
+
         stack = []
         for i, op in enumerate(ir):
             if op[0] == 'jump_zero':
@@ -438,7 +441,7 @@ class BrainFuck:
                     match_pos = stack.pop()
                     ir[match_pos] = ('jump_zero', i + 1)
                     ir[i] = ('jump_nz', match_pos)
-        
+
         return ir
 
     def _sync_cells_from_tape(self, tape, tape_center):
@@ -460,7 +463,10 @@ class BrainFuck:
             else:
                 print(value, end="")
 
-    def _execute_segmented_jit(self, numeric_program, tape, tape_center, state, output_buf, max_iterations):
+    def _execute_segmented_jit(
+        self, numeric_program, tape, tape_center, state, output_buf,
+        max_iterations,
+    ):
         """Execute program using segmented JIT with Python I/O checkpoints.
 
         Runs JIT for computation segments, pausing at I/O operations
@@ -602,10 +608,13 @@ class BrainFuck:
                     if 0 <= idx < TAPE_SIZE:
                         tape[idx] = value
 
-            state = np.array([tape_center + self.pointer, np.int64(0), np.int64(0)], dtype=np.int64)
+            state = np.array(
+                [tape_center + self.pointer, np.int64(0), np.int64(0)],
+                dtype=np.int64,
+            )
             output_buf = np.empty(OUTPUT_BUF_SIZE, dtype=np.int32)
 
-            completed = self._execute_segmented_jit(
+            self._execute_segmented_jit(
                 numeric_program, tape, tape_center, state, output_buf, MAX_RECURSION
             )
 
@@ -627,13 +636,14 @@ class BrainFuck:
             cmd_line = input('>> ')
             while not self.is_balanced(cmd_line):
                 tmp = input('.. ')
-                cmd_line = cmd_line+tmp if tmp else 'skip'
-            if cmd_line == 'help': 
+                cmd_line = cmd_line + tmp if tmp else 'skip'
+            if cmd_line == 'help':
                 print(help_text)
-            elif not cmd_line: 
+            elif not cmd_line:
                 break
-            else: 
+            else:
                 self.execute(cmd_line, MAX_RECURSION)
+
 
 class Cells:
     """Optimized cell storage using list for positive indices, dict for negative."""
@@ -641,7 +651,7 @@ class Cells:
     def __init__(self):
         self._tape = [0] * 30000
         self._sparse = defaultdict(int)
-        
+
     def __getitem__(self, key):
         """Return cell value at key, 0 if undefined."""
         if 0 <= key < len(self._tape):
@@ -686,7 +696,7 @@ class Cells:
             m, M = min(non_zero_indices), max(non_zero_indices)
         else:
             m = M = pos
-            
+
         print_list = []
         for i in range(m, M + 1):
             val = self[i]
@@ -694,8 +704,9 @@ class Cells:
                 print_list.append('|{}|'.format(val))
             else:
                 print_list.append(str(val))
-                
+
         return ' '.join(print_list)
+
 
 def main(args=[]):
     """Config parser and run command line options."""
@@ -737,5 +748,6 @@ def main(args=[]):
     if not arguments.command_line:
         bf.interpreter(arguments.recursion)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main(sys.argv[1:])

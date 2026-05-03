@@ -2,6 +2,31 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
+## [2.1.0] - 20260503
+
+### Added
+
+- Proper Python package structure (`brainfuck/` package with `__init__.py`, `__main__.py`, `core.py`)
+- 16 new bflib programs: `div`, `mod`, `zero`, `move`, `swap`, `not`, `and`, `or`, `eq`, `if`, `sqrt`, `p5`, `p32`, `p48`, `p65`, `newline`
+- `python -m brainfuck` entry point for running the interpreter
+- PyPI-compatible packaging with `setuptools` build backend and `package-data` for bflib inclusion
+- `-f`/`--file` flag for loading large Brainfuck programs from files (fixes #2: "Argument list too long" for large programs)
+- `pyproject.toml` build configuration with `[tool.setuptools.packages.find]` and `[tool.setuptools.package-data]`
+
+### Changed
+
+- Restructured from single `brainfuck.py` module to `brainfuck/` package directory
+- bflib directory moved inside `brainfuck/bflib/` for installed-package compatibility
+- Library import path resolution now uses `__file__`-relative paths for wheel compatibility
+- Version bumped to 2.1.0
+- `pyproject.toml` updated: removed `agents-smith` dependency, added `build` to dev deps, added setuptools config
+
+### Fixed
+
+- **#2**: Large Brainfuck programs can now be loaded via `-f FILE` flag instead of shell argument expansion
+- PyPI package now includes bflib data files and installs as a proper importable package
+- Feature test discovery fixed (`*_test.py` pattern added to pytest config)
+
 ## [2.0.0] - 20260503 — Neuroplasticity
 
 ### Added
