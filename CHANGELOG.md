@@ -2,7 +2,7 @@
 
 All notable changes to advanced-brainfuck will be documented in this file.
 
-## [2.0.0] - 20260503 — Neuroplasticity — Syncope
+## [2.0.0] - 20260503 — Neuroplasticity
 
 ### Added
 
